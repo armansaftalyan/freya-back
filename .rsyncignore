@@ -1,0 +1,28 @@
+# ИСКЛЮЧИТЬ ПАПКИ
+.git/
+node_modules/
+vendor/
+storage/logs/
+storage/framework/cache/
+storage/framework/sessions/
+storage/debugbar/
+public/hot/
+public/storage/
+# игнорируем user-uploaded картинки
+storage/app/public
+public/storage
+
+
+# ИСКЛЮЧИТЬ ФАЙЛЫ
+.env
+.env.*
+npm-debug.log
+yarn.lock
+package-lock.json
+docker-compose.override.yml
+phpunit.xml
+*.test.php
+*.log
+*.sqlite
+*.zip
+*.tar.gz

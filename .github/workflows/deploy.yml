@@ -1,0 +1,125 @@
+name: 🚀 Deploy freya-backend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: 🔐 Deploy via SSH
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔐 Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_GITHUB }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H 159.89.27.153 >> ~/.ssh/known_hosts
+
+      - name: 🔄 Sync files to server
+        run: |
+          rsync -avz --delete \
+            --exclude-from=.rsyncignore \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no" \
+            ./ web@159.89.27.153:/root/freya-back
+
+      - name: 🐳 Laravel deploy (composer + artisan)
+        run: |
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no web@159.89.27.153 << 'EOF'
+            set -e
+
+            cd /root/freya-back
+
+            # composer без sudo (если стоит в /home/web/bin/composer)
+            export PATH="/home/web/bin:$PATH"
+
+            /home/web/bin/composer install --no-interaction --prefer-dist --optimize-autoloader
+
+            php artisan key:generate --force
+            php artisan optimize
+            php artisan l5-swagger:generate
+
+            mkdir -p public/api-docs
+            cp -f storage/api-docs/api-docs.json public/api-docs/api-docs.json
+
+            php artisan config:clear
+            php artisan config:cache
+
+            php artisan storage:link || true
+          EOF
+
+
+#name: 🚀 Deploy exe.ru_version_2.0
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#
+#jobs:
+#  deploy:
+#    name: 🔐 Deploy via SSH
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: 📥 Checkout repository
+#        uses: actions/checkout@v3
+#
+#      - name: 🔐 Setup SSH key
+#        run: |
+#          mkdir -p ~/.ssh
+#          echo "${{ secrets.SSH_GITHUB }}" > ~/.ssh/deploy_key
+#          chmod 600 ~/.ssh/deploy_key
+#          ssh-keyscan -H 159.89.27.153 >> ~/.ssh/known_hosts
+#
+#      - name: 🔄 Sync files to server
+#        run: |
+#          rsync -avz --delete \
+#            --exclude-from=.rsyncignore \
+#            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+#            ./ root@159.89.27.153:/root/exe.ru_version_2.0/
+#
+#      - name: 🐳 Rebuild and run Docker
+#        run: |
+#          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no root@159.89.27.153 << 'EOF'
+#            set -e
+#            cd /root/exe.ru_version_2.0
+#
+#
+#            # Пересобираем и запускаем контейнеры
+#            docker compose -f docker/docker-compose.yml up --build -d
+#            docker network connect exeru_front_exeru exeru-nginx || true
+#
+#            cp .env.example.docker .env
+#            sudo chown -R 1001:docker storage bootstrap/cache
+#            sudo chmod -R 775 storage bootstrap/cache
+#
+#            # Устанавливаем зависимости Laravel через Composer внутри контейнера
+#            docker exec exeru-app composer install --no-interaction --prefer-dist --optimize-autoloader
+#
+#            # Laravel команды
+#            docker exec exeru-app php artisan key:generate
+#            docker exec exeru-app php artisan optimize
+#            docker exec exeru-app php artisan db:seed --force
+#
+#            # ⚙️ Swagger генерация
+#            docker exec exeru-app php artisan l5-swagger:generate
+#
+#            # 📄 Копируем swagger json в публичную папку
+#            docker exec exeru-app mkdir -p public/api-docs
+#            docker exec exeru-app cp storage/api-docs/api-docs.json public/api-docs/api-docs.json
+#
+#            # 🧹 Чистим кеш конфигов (на всякий случай)
+#            docker exec exeru-app php artisan config:clear
+#            docker exec exeru-app php artisan config:cache
+#
+#            chown -R 1000:1000 storage bootstrap/cache
+#            chmod -R 775 storage bootstrap/cache
+#
+#            docker exec exeru-app php artisan storage:link
+#          EOF
