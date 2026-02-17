@@ -6,7 +6,7 @@ storage/logs/
 storage/framework/cache/
 storage/framework/sessions/
 storage/debugbar/
-public/hot/
+public
 public/storage/
 # игнорируем user-uploaded картинки
 storage/app/public
