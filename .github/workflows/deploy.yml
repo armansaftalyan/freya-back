@@ -34,6 +34,8 @@ jobs:
             set -e
 
             cd /var/www/freya-back
+            sudo chown -R www-data:www-data /var/www/freya-back/storage /var/www/freya-back/bootstrap/cache
+            sudo chmod -R 775 /var/www/freya-back/storage /var/www/freya-back/bootstrap/cache
 
             composer install --no-interaction --prefer-dist --optimize-autoloader
 
