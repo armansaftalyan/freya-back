@@ -26,19 +26,16 @@ jobs:
           rsync -avz --delete \
             --exclude-from=.rsyncignore \
             -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no" \
-            ./ web@159.89.27.153:/root/freya-back
+            ./ root@159.89.27.153:/var/www/freya-back
 
       - name: 🐳 Laravel deploy (composer + artisan)
         run: |
-          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no web@159.89.27.153 << 'EOF'
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no root@159.89.27.153 << 'EOF'
             set -e
 
-            cd /root/freya-back
+            cd /var/www/freya-back
 
-            # composer без sudo (если стоит в /home/web/bin/composer)
-            export PATH="/home/web/bin:$PATH"
-
-            /home/web/bin/composer install --no-interaction --prefer-dist --optimize-autoloader
+            composer install --no-interaction --prefer-dist --optimize-autoloader
 
             php artisan key:generate --force
             php artisan optimize
