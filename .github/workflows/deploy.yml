@@ -39,10 +39,6 @@ jobs:
 
             php artisan key:generate --force
             php artisan optimize
-            php artisan l5-swagger:generate
-
-            mkdir -p public/api-docs
-            cp -f storage/api-docs/api-docs.json public/api-docs/api-docs.json
 
             php artisan config:clear
             php artisan config:cache
