@@ -21,6 +21,21 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('messages.filament.resources.user.plural');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('messages.filament.resources.user.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('messages.filament.resources.user.plural');
+    }
+
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery()->with('roles');
@@ -71,7 +86,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('email')->searchable(),
                 Tables\Columns\TextColumn::make('phone'),
-                Tables\Columns\TextColumn::make('roles.name')->label('Roles')->badge()->separator(','),
+                Tables\Columns\TextColumn::make('roles.name')->label(__('messages.filament.fields.roles'))->badge()->separator(','),
                 Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
             ])
             ->actions([

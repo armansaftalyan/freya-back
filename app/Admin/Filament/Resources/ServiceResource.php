@@ -19,11 +19,26 @@ class ServiceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-scissors';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('messages.filament.resources.service.plural');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('messages.filament.resources.service.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('messages.filament.resources.service.plural');
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
             Forms\Components\Select::make('category_id')
-                ->label('Category')
+                ->label(__('messages.filament.fields.category'))
                 ->options(Category::query()->pluck('name', 'id'))
                 ->searchable()
                 ->required(),
@@ -44,8 +59,8 @@ class ServiceResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')->sortable(),
                 Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('category.name')->label('Category')->searchable(),
-                Tables\Columns\TextColumn::make('duration_minutes')->label('Duration')->sortable(),
+                Tables\Columns\TextColumn::make('category.name')->label(__('messages.filament.fields.category'))->searchable(),
+                Tables\Columns\TextColumn::make('duration_minutes')->label(__('messages.filament.fields.duration'))->sortable(),
                 Tables\Columns\TextColumn::make('price_from')->money('USD')->sortable(),
                 Tables\Columns\IconColumn::make('is_active')->boolean(),
                 Tables\Columns\TextColumn::make('sort')->sortable(),

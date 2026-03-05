@@ -21,6 +21,21 @@ class MasterResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('messages.filament.resources.master.plural');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('messages.filament.resources.master.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('messages.filament.resources.master.plural');
+    }
+
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
@@ -40,7 +55,7 @@ class MasterResource extends Resource
             Forms\Components\TextInput::make('name')->required()->maxLength(255),
             Forms\Components\Textarea::make('bio')->rows(3),
             Forms\Components\TextInput::make('avatar')->maxLength(255),
-            Forms\Components\KeyValue::make('schedule_rules')->addActionLabel('Add day rule'),
+            Forms\Components\KeyValue::make('schedule_rules')->addActionLabel(__('messages.filament.actions.add_day_rule')),
             Forms\Components\Select::make('services')
                 ->multiple()
                 ->relationship('services', 'name')
@@ -57,7 +72,7 @@ class MasterResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')->sortable(),
                 Tables\Columns\TextColumn::make('name')->searchable(),
-                Tables\Columns\TextColumn::make('user.email')->label('Linked user'),
+                Tables\Columns\TextColumn::make('user.email')->label(__('messages.filament.fields.linked_user')),
                 Tables\Columns\IconColumn::make('is_active')->boolean(),
                 Tables\Columns\TextColumn::make('sort')->sortable(),
             ])

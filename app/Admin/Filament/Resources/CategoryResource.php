@@ -18,6 +18,21 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('messages.filament.resources.category.plural');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('messages.filament.resources.category.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('messages.filament.resources.category.plural');
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([

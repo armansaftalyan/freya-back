@@ -31,10 +31,10 @@ class SalonStatsOverview extends StatsOverviewWidget
             ->first();
 
         return [
-            Stat::make('Appointments Today', (string) $appointmentsToday),
-            Stat::make('Appointments This Week', (string) $appointmentsWeek),
-            Stat::make('New Clients This Week', (string) $newClientsWeek),
-            Stat::make('Top Service', $topService ? $topService->name.' ('.$topService->total.')' : 'N/A'),
+            Stat::make(__('messages.filament.widgets.appointments_today'), (string) $appointmentsToday),
+            Stat::make(__('messages.filament.widgets.appointments_week'), (string) $appointmentsWeek),
+            Stat::make(__('messages.filament.widgets.new_clients_week'), (string) $newClientsWeek),
+            Stat::make(__('messages.filament.widgets.top_service'), $topService ? $topService->name.' ('.$topService->total.')' : __('messages.filament.widgets.na')),
         ];
     }
 }

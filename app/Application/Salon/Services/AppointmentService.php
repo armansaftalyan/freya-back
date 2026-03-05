@@ -11,6 +11,7 @@ use App\Domain\Salon\Models\Service;
 use App\Domain\Users\Models\User;
 use App\Infrastructure\Notifications\AppointmentNotifier;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class AppointmentService
@@ -34,7 +35,7 @@ class AppointmentService
 
         if ($this->slotGenerationService->hasConflict($master->id, $startAt, $endAt)) {
             throw ValidationException::withMessages([
-                'start_at' => ['Selected time slot is already occupied.'],
+                'start_at' => [__('messages.appointment.slot_occupied')],
             ]);
         }
 
@@ -56,6 +57,38 @@ class AppointmentService
         return $appointment;
     }
 
+    public function resolveGuestClient(string $guestName, string $guestPhone): User
+    {
+        $normalizedPhone = $this->normalizePhone($guestPhone);
+
+        /** @var User|null $existing */
+        $existing = User::query()
+            ->where('phone', $normalizedPhone)
+            ->first();
+
+        if ($existing !== null) {
+            if (! $existing->hasRole('client')) {
+                $existing->assignRole('client');
+            }
+
+            return $existing;
+        }
+
+        $guestEmail = sprintf('guest-%s-%s@example.local', $normalizedPhone, Str::lower(Str::random(6)));
+
+        /** @var User $client */
+        $client = User::query()->create([
+            'name' => trim($guestName),
+            'phone' => $normalizedPhone,
+            'email' => $guestEmail,
+            'password' => Str::random(32),
+        ]);
+
+        $client->assignRole('client');
+
+        return $client;
+    }
+
     public function cancelByClient(Appointment $appointment): Appointment
     {
         $from = $appointment->status->value;
@@ -63,7 +96,7 @@ class AppointmentService
 
         if (! AppointmentStatus::canTransition($from, $to)) {
             throw ValidationException::withMessages([
-                'status' => [sprintf('Transition from %s to %s is forbidden.', $from, $to)],
+                'status' => [__('messages.appointment.transition_forbidden', ['from' => $from, 'to' => $to])],
             ]);
         }
 
@@ -71,5 +104,10 @@ class AppointmentService
         $appointment->save();
 
         return $appointment;
+    }
+
+    private function normalizePhone(string $phone): string
+    {
+        return trim(preg_replace('/\s+/', '', $phone) ?? $phone);
     }
 }

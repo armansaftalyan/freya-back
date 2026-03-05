@@ -18,6 +18,21 @@ class BranchResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('messages.filament.resources.branch.plural');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('messages.filament.resources.branch.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('messages.filament.resources.branch.plural');
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -26,7 +41,7 @@ class BranchResource extends Resource
             Forms\Components\TextInput::make('phone'),
             Forms\Components\TextInput::make('geo_lat')->numeric(),
             Forms\Components\TextInput::make('geo_lng')->numeric(),
-            Forms\Components\KeyValue::make('working_hours')->addActionLabel('Add day rule'),
+            Forms\Components\KeyValue::make('working_hours')->addActionLabel(__('messages.filament.actions.add_day_rule')),
             Forms\Components\Toggle::make('is_active')->default(true),
         ]);
     }

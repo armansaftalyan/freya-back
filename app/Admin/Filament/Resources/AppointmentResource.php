@@ -24,6 +24,21 @@ class AppointmentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('messages.filament.resources.appointment.plural');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('messages.filament.resources.appointment.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('messages.filament.resources.appointment.plural');
+    }
+
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery()->with(['client', 'master', 'branch', 'service']);
@@ -39,24 +54,24 @@ class AppointmentResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Select::make('client_id')->label('Client')->options(User::role('client')->pluck('email', 'id'))->required()->searchable(),
-            Forms\Components\Select::make('master_id')->label('Master')->options(Master::query()->pluck('name', 'id'))->required()->searchable(),
-            Forms\Components\Select::make('branch_id')->label('Branch')->options(Branch::query()->pluck('name', 'id'))->required()->searchable(),
-            Forms\Components\Select::make('service_id')->label('Service')->options(Service::query()->pluck('name', 'id'))->required()->searchable(),
+            Forms\Components\Select::make('client_id')->label(__('messages.filament.fields.client'))->options(User::role('client')->pluck('email', 'id'))->required()->searchable(),
+            Forms\Components\Select::make('master_id')->label(__('messages.filament.fields.master'))->options(Master::query()->pluck('name', 'id'))->required()->searchable(),
+            Forms\Components\Select::make('branch_id')->label(__('messages.filament.fields.branch'))->options(Branch::query()->pluck('name', 'id'))->required()->searchable(),
+            Forms\Components\Select::make('service_id')->label(__('messages.filament.fields.service'))->options(Service::query()->pluck('name', 'id'))->required()->searchable(),
             Forms\Components\DateTimePicker::make('start_at')->required(),
             Forms\Components\DateTimePicker::make('end_at')->required(),
             Forms\Components\Select::make('status')->options([
-                AppointmentStatus::Pending->value => 'Pending',
-                AppointmentStatus::Confirmed->value => 'Confirmed',
-                AppointmentStatus::Cancelled->value => 'Cancelled',
-                AppointmentStatus::Done->value => 'Done',
-                AppointmentStatus::NoShow->value => 'No show',
+                AppointmentStatus::Pending->value => __('messages.filament.status.pending'),
+                AppointmentStatus::Confirmed->value => __('messages.filament.status.confirmed'),
+                AppointmentStatus::Cancelled->value => __('messages.filament.status.cancelled'),
+                AppointmentStatus::Done->value => __('messages.filament.status.done'),
+                AppointmentStatus::NoShow->value => __('messages.filament.status.no_show'),
             ])->required(),
             Forms\Components\Textarea::make('comment'),
             Forms\Components\Select::make('source')->options([
-                'site' => 'Site',
-                'phone' => 'Phone',
-                'instagram' => 'Instagram',
+                'site' => __('messages.filament.source.site'),
+                'phone' => __('messages.filament.source.phone'),
+                'instagram' => __('messages.filament.source.instagram'),
             ])->required(),
         ]);
     }
@@ -67,10 +82,10 @@ class AppointmentResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')->sortable(),
                 Tables\Columns\TextColumn::make('start_at')->dateTime()->sortable(),
-                Tables\Columns\TextColumn::make('client.email')->label('Client')->searchable(),
-                Tables\Columns\TextColumn::make('master.name')->label('Master')->searchable(),
-                Tables\Columns\TextColumn::make('service.name')->label('Service')->searchable(),
-                Tables\Columns\TextColumn::make('branch.name')->label('Branch')->searchable(),
+                Tables\Columns\TextColumn::make('client.email')->label(__('messages.filament.fields.client'))->searchable(),
+                Tables\Columns\TextColumn::make('master.name')->label(__('messages.filament.fields.master'))->searchable(),
+                Tables\Columns\TextColumn::make('service.name')->label(__('messages.filament.fields.service'))->searchable(),
+                Tables\Columns\TextColumn::make('branch.name')->label(__('messages.filament.fields.branch'))->searchable(),
                 Tables\Columns\BadgeColumn::make('status')
                     ->colors([
                         'warning' => AppointmentStatus::Pending->value,
@@ -82,11 +97,11 @@ class AppointmentResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')->options([
-                    AppointmentStatus::Pending->value => 'Pending',
-                    AppointmentStatus::Confirmed->value => 'Confirmed',
-                    AppointmentStatus::Cancelled->value => 'Cancelled',
-                    AppointmentStatus::Done->value => 'Done',
-                    AppointmentStatus::NoShow->value => 'No show',
+                    AppointmentStatus::Pending->value => __('messages.filament.status.pending'),
+                    AppointmentStatus::Confirmed->value => __('messages.filament.status.confirmed'),
+                    AppointmentStatus::Cancelled->value => __('messages.filament.status.cancelled'),
+                    AppointmentStatus::Done->value => __('messages.filament.status.done'),
+                    AppointmentStatus::NoShow->value => __('messages.filament.status.no_show'),
                 ]),
                 Tables\Filters\SelectFilter::make('master_id')->options(Master::query()->pluck('name', 'id')),
                 Tables\Filters\SelectFilter::make('branch_id')->options(Branch::query()->pluck('name', 'id')),
@@ -106,7 +121,7 @@ class AppointmentResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkAction::make('confirm')
-                    ->label('Confirm selected')
+                    ->label(__('messages.filament.actions.confirm_selected'))
                     ->color('success')
                     ->action(function ($records): void {
                         foreach ($records as $record) {
@@ -117,7 +132,7 @@ class AppointmentResource extends Resource
                         }
                     }),
                 Tables\Actions\BulkAction::make('cancel')
-                    ->label('Cancel selected')
+                    ->label(__('messages.filament.actions.cancel_selected'))
                     ->color('danger')
                     ->action(function ($records): void {
                         foreach ($records as $record) {
