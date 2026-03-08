@@ -355,14 +355,11 @@ class AppointmentService
             return $existing;
         }
 
-        $phoneToken = preg_replace('/\D+/', '', $normalizedPhone) ?: Str::lower(Str::random(8));
-        $guestEmail = sprintf('guest-%s-%s@example.local', $phoneToken, Str::lower(Str::random(6)));
-
         /** @var User $client */
         $client = User::query()->create([
             'name' => trim($guestName),
             'phone' => $normalizedPhone,
-            'email' => $guestEmail,
+            'email' => null,
             'password' => Str::random(32),
         ]);
 

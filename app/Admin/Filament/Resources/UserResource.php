@@ -87,7 +87,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email')->searchable(),
                 Tables\Columns\TextColumn::make('phone'),
                 Tables\Columns\TextColumn::make('roles.name')->label(__('messages.filament.fields.roles'))->badge()->separator(','),
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
+                Tables\Columns\TextColumn::make('created_at')->dateTime('Y-m-d H:i')->sortable(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

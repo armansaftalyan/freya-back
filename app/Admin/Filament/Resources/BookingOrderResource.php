@@ -50,7 +50,7 @@ class BookingOrderResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->sortable(),
-                Tables\Columns\TextColumn::make('client.email')
+                Tables\Columns\TextColumn::make('client.name')
                     ->label(__('messages.filament.fields.client'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('client.phone')

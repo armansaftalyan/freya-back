@@ -55,7 +55,13 @@ class AppointmentResource extends Resource
         return $form->schema([
             Forms\Components\Select::make('client_id')
                 ->label(__('messages.filament.fields.client'))
-                ->options(User::role('client')->pluck('email', 'id'))
+                ->options(
+                    User::role('client')
+                        ->orderBy('name')
+                        ->get(['id', 'name', 'phone', 'email'])
+                        ->mapWithKeys(fn (User $user): array => [$user->id => self::formatClientLabel($user)])
+                        ->all()
+                )
                 ->required()
                 ->searchable()
                 ->live()
@@ -153,7 +159,9 @@ class AppointmentResource extends Resource
                     ->label(__('messages.filament.fields.booking_order'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('start_at')->dateTime('Y-m-d H:i')->sortable(),
-                Tables\Columns\TextColumn::make('client.email')->label(__('messages.filament.fields.client'))->searchable(),
+                Tables\Columns\TextColumn::make('client.name')
+                    ->label(__('messages.filament.fields.client'))
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('client.phone')->label(__('messages.filament.fields.client_phone'))->searchable(),
                 Tables\Columns\TextColumn::make('master.name')
                     ->label(__('messages.filament.fields.master'))
@@ -230,5 +238,20 @@ class AppointmentResource extends Resource
             'create' => Pages\CreateAppointment::route('/create'),
             'edit' => Pages\EditAppointment::route('/{record}/edit'),
         ];
+    }
+
+    private static function formatClientLabel(User $user): string
+    {
+        $name = trim((string) $user->name);
+        $phone = trim((string) ($user->phone ?? ''));
+        $email = trim((string) ($user->email ?? ''));
+
+        $main = $name !== '' ? $name : ('#'.$user->id);
+        $contacts = array_values(array_filter([$phone, $email], fn (string $value): bool => $value !== ''));
+        if ($contacts === []) {
+            return $main;
+        }
+
+        return sprintf('%s (%s)', $main, implode(', ', $contacts));
     }
 }
