@@ -9,4 +9,5 @@ enum AppointmentSource: string
     case Site = 'site';
     case Phone = 'phone';
     case Instagram = 'instagram';
+    case YandexMaps = 'yandex_maps';
 }

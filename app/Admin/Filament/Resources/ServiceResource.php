@@ -46,8 +46,8 @@ class ServiceResource extends Resource
             Forms\Components\TextInput::make('slug')->required()->maxLength(255)->unique(ignoreRecord: true),
             Forms\Components\Textarea::make('description')->rows(4),
             Forms\Components\TextInput::make('duration_minutes')->required()->numeric()->minValue(10),
-            Forms\Components\TextInput::make('price_from')->numeric(),
-            Forms\Components\TextInput::make('price_to')->numeric(),
+            Forms\Components\TextInput::make('price_from')->numeric()->prefix('֏'),
+            Forms\Components\TextInput::make('price_to')->numeric()->prefix('֏'),
             Forms\Components\TextInput::make('sort')->numeric()->default(0)->required(),
             Forms\Components\Toggle::make('is_active')->default(true),
         ]);
@@ -61,7 +61,9 @@ class ServiceResource extends Resource
                 Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('category.name')->label(__('messages.filament.fields.category'))->searchable(),
                 Tables\Columns\TextColumn::make('duration_minutes')->label(__('messages.filament.fields.duration'))->sortable(),
-                Tables\Columns\TextColumn::make('price_from')->money('USD')->sortable(),
+                Tables\Columns\TextColumn::make('price_from')
+                    ->formatStateUsing(fn ($state): string => number_format((float) ($state ?? 0), 0, '.', ' ').' ֏')
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')->boolean(),
                 Tables\Columns\TextColumn::make('sort')->sortable(),
             ])

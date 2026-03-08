@@ -14,8 +14,10 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->string('name');
+            $table->json('name_i18n')->nullable();
             $table->string('slug')->unique();
             $table->text('description')->nullable();
+            $table->json('description_i18n')->nullable();
             $table->integer('duration_minutes');
             $table->decimal('price_from', 10, 2)->nullable();
             $table->decimal('price_to', 10, 2)->nullable();

@@ -38,6 +38,9 @@ class CategoryResource extends Resource
         return $form->schema([
             Forms\Components\TextInput::make('name')->required()->maxLength(255),
             Forms\Components\TextInput::make('slug')->required()->maxLength(255)->unique(ignoreRecord: true),
+            Forms\Components\TextInput::make('booking_group')
+                ->maxLength(255)
+                ->helperText('Categories with the same group can be booked together in one line.'),
             Forms\Components\TextInput::make('sort')->numeric()->default(0)->required(),
             Forms\Components\Toggle::make('is_active')->default(true),
         ]);
@@ -50,6 +53,7 @@ class CategoryResource extends Resource
                 Tables\Columns\TextColumn::make('id')->sortable(),
                 Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('slug')->searchable(),
+                Tables\Columns\TextColumn::make('booking_group')->label('Group')->searchable(),
                 Tables\Columns\IconColumn::make('is_active')->boolean(),
                 Tables\Columns\TextColumn::make('sort')->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')->since()->sortable(),

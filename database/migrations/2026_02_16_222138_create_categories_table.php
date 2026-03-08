@@ -13,7 +13,9 @@ return new class extends Migration {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->json('name_i18n')->nullable();
             $table->string('slug')->unique();
+            $table->string('booking_group')->nullable()->index();
             $table->integer('sort')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();

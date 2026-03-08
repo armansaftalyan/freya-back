@@ -34,12 +34,11 @@
       "request": {
         "method": "GET",
         "url": {
-          "raw": "{{base_url}}/api/slots?branch_id=1&service_id=1&master_id=1&date=2026-02-20",
+          "raw": "{{base_url}}/api/slots?service_ids[]=1&master_id=1&date=2026-02-20",
           "host": ["{{base_url}}"],
           "path": ["api", "slots"],
           "query": [
-            {"key": "branch_id", "value": "1"},
-            {"key": "service_id", "value": "1"},
+            {"key": "service_ids[]", "value": "1"},
             {"key": "master_id", "value": "1"},
             {"key": "date", "value": "2026-02-20"}
           ]
@@ -55,7 +54,7 @@
           {"key": "Authorization", "value": "Bearer {{token}}"}
         ],
         "url": {"raw": "{{base_url}}/api/appointments", "host": ["{{base_url}}"], "path": ["api", "appointments"]},
-        "body": {"mode": "raw", "raw": "{\n  \"master_id\": 1,\n  \"branch_id\": 1,\n  \"service_id\": 1,\n  \"start_at\": \"2026-02-20 11:00:00\",\n  \"source\": \"site\"\n}"}
+        "body": {"mode": "raw", "raw": "{\n  \"master_id\": 1,\n  \"service_ids\": [1, 2],\n  \"start_at\": \"2026-02-20 11:00:00\",\n  \"source\": \"site\"\n}"}
       }
     }
   ],

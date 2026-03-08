@@ -21,7 +21,7 @@ class AppointmentPolicy
         }
 
         if ($user->hasRole('master')) {
-            return $appointment->master->user_id === $user->id;
+            return $appointment->master?->user_id === $user->id;
         }
 
         return $appointment->client_id === $user->id;

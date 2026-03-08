@@ -6,9 +6,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Application\Salon\Services\AppointmentService;
 use App\Domain\Salon\Models\Appointment;
+use App\Domain\Users\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Appointment\StoreAppointmentRequest;
 use App\Http\Resources\Api\AppointmentResource;
+use App\Http\Resources\Api\BookingOrderResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -21,12 +23,58 @@ class AppointmentController extends Controller
 
     public function store(StoreAppointmentRequest $request): JsonResponse
     {
-        $this->authorize('create', Appointment::class);
+        /** @var User|null $authenticatedUser */
+        $authenticatedUser = $request->user();
+        $payload = $request->validated();
 
-        $appointment = $this->appointmentService->create($request->user(), $request->validated());
+        if ($authenticatedUser !== null) {
+            $this->authorize('create', Appointment::class);
+            $client = $authenticatedUser;
+        } else {
+            $client = $this->appointmentService->resolveGuestClient(
+                (string) $payload['guest_name'],
+                (string) $payload['guest_phone'],
+            );
+        }
+
+        if (! empty($payload['items']) && is_array($payload['items'])) {
+            $appointments = $this->appointmentService->createMany($client, $payload);
+            $first = $appointments[0] ?? null;
+
+            return response()->json([
+                'data' => $first ? new AppointmentResource($first->load(['service', 'services', 'master', 'client'])) : null,
+                'appointments' => AppointmentResource::collection(
+                    collect($appointments)->map(
+                        fn (Appointment $item): Appointment => $item->load(['service', 'services', 'master', 'client'])
+                    )
+                ),
+            ], 201);
+        }
+
+        if (! empty($payload['lines']) && is_array($payload['lines'])) {
+            $order = $this->appointmentService->createOrder($client, $payload)
+                ->load([
+                    'client',
+                    'appointments.service',
+                    'appointments.services',
+                    'appointments.master',
+                    'appointments.client',
+                ]);
+            /** @var \Illuminate\Support\Collection<int, Appointment> $appointments */
+            $appointments = $order->appointments;
+            $first = $appointments->first();
+
+            return response()->json([
+                'data' => $first ? new AppointmentResource($first) : null,
+                'booking_order' => new BookingOrderResource($order),
+                'appointments' => AppointmentResource::collection($appointments),
+            ], 201);
+        }
+
+        $appointment = $this->appointmentService->create($client, $payload);
 
         return response()->json([
-            'data' => new AppointmentResource($appointment->load(['service', 'master', 'branch', 'client'])),
+            'data' => new AppointmentResource($appointment->load(['service', 'services', 'master', 'client'])),
         ], 201);
     }
 
@@ -34,7 +82,7 @@ class AppointmentController extends Controller
     {
         return AppointmentResource::collection(
             Appointment::query()
-                ->with(['service', 'master', 'branch'])
+                ->with(['service', 'services', 'master'])
                 ->where('client_id', $request->user()->id)
                 ->latest('start_at')
                 ->get()
@@ -48,7 +96,7 @@ class AppointmentController extends Controller
         $appointment = $this->appointmentService->cancelByClient($appointment);
 
         return response()->json([
-            'data' => new AppointmentResource($appointment->load(['service', 'master', 'branch', 'client'])),
+            'data' => new AppointmentResource($appointment->load(['service', 'services', 'master', 'client'])),
         ]);
     }
 }

@@ -16,15 +16,14 @@ class AppointmentNotifier
 
     public function notifyCreated(Appointment $appointment): void
     {
-        $appointment->loadMissing(['client', 'master', 'service', 'branch']);
+        $appointment->loadMissing(['client', 'master', 'service']);
 
         $message = sprintf(
-            'Appointment #%d created | client=%s | master=%s | service=%s | branch=%s | %s - %s | status=%s',
+            'Appointment #%d created | client=%s | master=%s | service=%s | %s - %s | status=%s',
             $appointment->id,
             $appointment->client->email,
-            $appointment->master->name,
+            $appointment->master?->name ?? 'unassigned',
             $appointment->service->name,
-            $appointment->branch->name,
             (string) $appointment->start_at,
             (string) $appointment->end_at,
             $appointment->status->value

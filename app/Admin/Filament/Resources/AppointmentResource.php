@@ -7,7 +7,6 @@ namespace App\Admin\Filament\Resources;
 use App\Admin\Filament\Resources\AppointmentResource\Pages;
 use App\Domain\Salon\Enums\AppointmentStatus;
 use App\Domain\Salon\Models\Appointment;
-use App\Domain\Salon\Models\Branch;
 use App\Domain\Salon\Models\Master;
 use App\Domain\Salon\Models\Service;
 use App\Domain\Users\Models\User;
@@ -41,7 +40,7 @@ class AppointmentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery()->with(['client', 'master', 'branch', 'service']);
+        $query = parent::getEloquentQuery()->with(['client', 'master', 'service', 'services']);
         $user = auth()->user();
 
         if ($user?->hasRole('master')) {
@@ -54,10 +53,78 @@ class AppointmentResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Select::make('client_id')->label(__('messages.filament.fields.client'))->options(User::role('client')->pluck('email', 'id'))->required()->searchable(),
-            Forms\Components\Select::make('master_id')->label(__('messages.filament.fields.master'))->options(Master::query()->pluck('name', 'id'))->required()->searchable(),
-            Forms\Components\Select::make('branch_id')->label(__('messages.filament.fields.branch'))->options(Branch::query()->pluck('name', 'id'))->required()->searchable(),
-            Forms\Components\Select::make('service_id')->label(__('messages.filament.fields.service'))->options(Service::query()->pluck('name', 'id'))->required()->searchable(),
+            Forms\Components\Select::make('client_id')
+                ->label(__('messages.filament.fields.client'))
+                ->options(User::role('client')->pluck('email', 'id'))
+                ->required()
+                ->searchable()
+                ->live()
+                ->afterStateUpdated(function ($state, callable $set): void {
+                    $clientId = (int) ($state ?? 0);
+                    $set('client_phone_display', $clientId > 0 ? (string) (User::query()->find($clientId)?->phone ?? '') : '');
+                }),
+            Forms\Components\TextInput::make('client_phone_display')
+                ->label(__('messages.filament.fields.client_phone'))
+                ->readOnly()
+                ->dehydrated(false)
+                ->afterStateHydrated(function (callable $set, callable $get, ?Appointment $record): void {
+                    if ($record?->client?->phone) {
+                        $set('client_phone_display', (string) $record->client->phone);
+                        return;
+                    }
+
+                    $clientId = (int) ($get('client_id') ?? 0);
+                    if ($clientId <= 0) {
+                        $set('client_phone_display', '');
+                        return;
+                    }
+
+                    $set('client_phone_display', (string) (User::query()->find($clientId)?->phone ?? ''));
+                }),
+            Forms\Components\TextInput::make('booking_order_id')
+                ->label(__('messages.filament.fields.booking_order'))
+                ->readOnly()
+                ->dehydrated(false),
+            Forms\Components\Select::make('master_id')
+                ->label(__('messages.filament.fields.master'))
+                ->options(Master::query()->pluck('name', 'id'))
+                ->searchable(),
+            Forms\Components\Select::make('service_id')
+                ->label(__('messages.filament.fields.service'))
+                ->options(Service::query()->pluck('name', 'id'))
+                ->required()
+                ->searchable()
+                ->live()
+                ->afterStateUpdated(function ($state, callable $set): void {
+                    $serviceId = (int) ($state ?? 0);
+                    $priceFrom = $serviceId > 0 ? Service::query()->find($serviceId)?->price_from : null;
+                    $set('total_price_display', $priceFrom !== null ? number_format((float) $priceFrom, 0, '.', ' ') : '');
+                }),
+            Forms\Components\TextInput::make('total_price_display')
+                ->label(__('messages.filament.fields.price'))
+                ->prefix('֏')
+                ->readOnly()
+                ->dehydrated(false)
+                ->afterStateHydrated(function (callable $set, callable $get, ?Appointment $record): void {
+                    if ($record !== null) {
+                        $set('total_price_display', number_format($record->total_price, 0, '.', ' '));
+                        return;
+                    }
+
+                    $serviceId = (int) ($get('service_id') ?? 0);
+                    if ($serviceId <= 0) {
+                        $set('total_price_display', '');
+                        return;
+                    }
+
+                    $priceFrom = Service::query()->find($serviceId)?->price_from;
+                    if ($priceFrom === null) {
+                        $set('total_price_display', '');
+                        return;
+                    }
+
+                    $set('total_price_display', number_format((float) $priceFrom, 0, '.', ' '));
+                }),
             Forms\Components\DateTimePicker::make('start_at')->required(),
             Forms\Components\DateTimePicker::make('end_at')->required(),
             Forms\Components\Select::make('status')->options([
@@ -72,6 +139,7 @@ class AppointmentResource extends Resource
                 'site' => __('messages.filament.source.site'),
                 'phone' => __('messages.filament.source.phone'),
                 'instagram' => __('messages.filament.source.instagram'),
+                'yandex_maps' => __('messages.filament.source.yandex_maps'),
             ])->required(),
         ]);
     }
@@ -81,11 +149,21 @@ class AppointmentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->sortable(),
-                Tables\Columns\TextColumn::make('start_at')->dateTime()->sortable(),
+                Tables\Columns\TextColumn::make('booking_order_id')
+                    ->label(__('messages.filament.fields.booking_order'))
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('start_at')->dateTime('Y-m-d H:i')->sortable(),
                 Tables\Columns\TextColumn::make('client.email')->label(__('messages.filament.fields.client'))->searchable(),
-                Tables\Columns\TextColumn::make('master.name')->label(__('messages.filament.fields.master'))->searchable(),
+                Tables\Columns\TextColumn::make('client.phone')->label(__('messages.filament.fields.client_phone'))->searchable(),
+                Tables\Columns\TextColumn::make('master.name')
+                    ->label(__('messages.filament.fields.master'))
+                    ->searchable()
+                    ->formatStateUsing(fn (?string $state): string => $state ?: '—'),
                 Tables\Columns\TextColumn::make('service.name')->label(__('messages.filament.fields.service'))->searchable(),
-                Tables\Columns\TextColumn::make('branch.name')->label(__('messages.filament.fields.branch'))->searchable(),
+                Tables\Columns\TextColumn::make('total_price')
+                    ->label(__('messages.filament.fields.price'))
+                    ->formatStateUsing(fn ($state): string => number_format((float) ($state ?? 0), 0, '.', ' ').' ֏')
+                    ->sortable(),
                 Tables\Columns\BadgeColumn::make('status')
                     ->colors([
                         'warning' => AppointmentStatus::Pending->value,
@@ -104,7 +182,6 @@ class AppointmentResource extends Resource
                     AppointmentStatus::NoShow->value => __('messages.filament.status.no_show'),
                 ]),
                 Tables\Filters\SelectFilter::make('master_id')->options(Master::query()->pluck('name', 'id')),
-                Tables\Filters\SelectFilter::make('branch_id')->options(Branch::query()->pluck('name', 'id')),
                 Tables\Filters\Filter::make('start_date')
                     ->form([
                         Forms\Components\DatePicker::make('date_from'),

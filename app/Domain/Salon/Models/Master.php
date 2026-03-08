@@ -20,8 +20,18 @@ class Master extends Model
     protected $fillable = [
         'user_id',
         'name',
+        'name_i18n',
+        'slug',
         'bio',
+        'bio_i18n',
         'avatar',
+        'experience_years',
+        'specialties',
+        'specialties_i18n',
+        'languages',
+        'certificates',
+        'certificates_i18n',
+        'instagram',
         'schedule_rules',
         'sort',
         'is_active',
@@ -32,6 +42,13 @@ class Master extends Model
         return [
             'is_active' => 'boolean',
             'schedule_rules' => 'array',
+            'specialties' => 'array',
+            'specialties_i18n' => 'array',
+            'languages' => 'array',
+            'certificates' => 'array',
+            'certificates_i18n' => 'array',
+            'name_i18n' => 'array',
+            'bio_i18n' => 'array',
         ];
     }
 
@@ -45,6 +62,11 @@ class Master extends Model
         return $this->belongsToMany(Service::class)
             ->withPivot(['duration_minutes', 'price'])
             ->withTimestamps();
+    }
+
+    public function masterServices(): HasMany
+    {
+        return $this->hasMany(MasterService::class, 'master_id');
     }
 
     public function appointments(): HasMany

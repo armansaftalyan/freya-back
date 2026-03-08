@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Salon\Services;
 
 use App\Domain\Salon\Models\Appointment;
-use App\Domain\Salon\Models\Branch;
 use App\Domain\Salon\Models\Master;
-use App\Domain\Salon\Models\Service;
 use Carbon\Carbon;
 
 class SlotGenerationService
@@ -15,23 +13,37 @@ class SlotGenerationService
     /**
      * @return array<int, array{start_at:string,end_at:string}>
      */
-    public function generate(Branch $branch, Master $master, Service $service, Carbon $date): array
+    public function generate(Master $master, int $durationMinutes, Carbon $date): array
     {
         $dayKey = strtolower($date->englishDayOfWeek);
+        $masterRules = $master->schedule_rules[$dayKey] ?? [];
 
-        $branchRules = $branch->working_hours[$dayKey] ?? [];
-        $masterRules = $master->schedule_rules[$dayKey] ?? $branchRules;
-
-        if (empty($branchRules) || empty($masterRules)) {
-            return [];
+        if (empty($masterRules)) {
+            $masterRules = [['start' => '10:00', 'end' => '19:00']];
         }
 
-        $duration = (int) $service->duration_minutes;
+        $duration = max(1, $durationMinutes);
+        $openTime = '10:00';
+        $closeTime = '19:00';
 
         $slots = [];
         foreach ($masterRules as $rule) {
-            $from = Carbon::parse($date->toDateString().' '.$rule['start']);
-            $to = Carbon::parse($date->toDateString().' '.$rule['end']);
+            $from = Carbon::parse($date->toDateString().' '.($rule['start'] ?? $openTime));
+            $to = Carbon::parse($date->toDateString().' '.($rule['end'] ?? $closeTime));
+            $openAt = Carbon::parse($date->toDateString().' '.$openTime);
+            $closeAt = Carbon::parse($date->toDateString().' '.$closeTime);
+
+            if ($from->lt($openAt)) {
+                $from = $openAt->copy();
+            }
+
+            if ($to->gt($closeAt)) {
+                $to = $closeAt->copy();
+            }
+
+            if ($to->lte($from)) {
+                continue;
+            }
 
             for ($cursor = $from->copy(); $cursor->copy()->addMinutes($duration)->lte($to); $cursor->addMinutes(30)) {
                 $start = $cursor->copy();

@@ -8,6 +8,21 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class SlotsQueryRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('service_id') && ! $this->has('service_ids')) {
+            $this->merge([
+                'service_ids' => [(int) $this->input('service_id')],
+            ]);
+        }
+
+        if ($this->has('service_ids') && ! is_array($this->input('service_ids'))) {
+            $this->merge([
+                'service_ids' => [(int) $this->input('service_ids')],
+            ]);
+        }
+    }
+
     public function authorize(): bool
     {
         return true;
@@ -16,8 +31,9 @@ class SlotsQueryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'branch_id' => ['required', 'integer', 'exists:branches,id'],
-            'service_id' => ['required', 'integer', 'exists:services,id'],
+            'service_id' => ['nullable', 'integer', 'exists:services,id'],
+            'service_ids' => ['required_without:service_id', 'array', 'min:1'],
+            'service_ids.*' => ['required', 'integer', 'exists:services,id'],
             'master_id' => ['required', 'integer', 'exists:masters,id'],
             'date' => ['required', 'date_format:Y-m-d'],
         ];

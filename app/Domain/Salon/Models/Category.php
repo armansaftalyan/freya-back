@@ -16,7 +16,9 @@ class Category extends Model
 
     protected $fillable = [
         'name',
+        'name_i18n',
         'slug',
+        'booking_group',
         'sort',
         'is_active',
     ];
@@ -25,6 +27,7 @@ class Category extends Model
     {
         return [
             'is_active' => 'boolean',
+            'name_i18n' => 'array',
         ];
     }
 

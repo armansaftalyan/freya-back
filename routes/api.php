@@ -23,11 +23,12 @@ Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
 Route::get('/categories', [CatalogController::class, 'categories']);
 Route::get('/services', [CatalogController::class, 'services']);
 Route::get('/masters', [CatalogController::class, 'masters']);
-Route::get('/branches', [CatalogController::class, 'branches']);
+Route::get('/masters/{masterKey}', [CatalogController::class, 'master']);
 Route::get('/slots', [SlotController::class, 'index']);
+Route::post('/slots/combo', [SlotController::class, 'combo']);
+Route::post('/appointments', [AppointmentController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function (): void {
-    Route::post('/appointments', [AppointmentController::class, 'store']);
     Route::get('/appointments/my', [AppointmentController::class, 'my']);
     Route::patch('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel']);
 });

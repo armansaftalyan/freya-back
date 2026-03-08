@@ -17,6 +17,8 @@ return new class extends Migration {
             $table->integer('duration_minutes')->nullable()->comment('Override service duration for this master');
             $table->decimal('price', 10, 2)->nullable()->comment('Override service price for this master');
             $table->timestamps();
+
+            $table->unique(['master_id', 'service_id']);
         });
     }
 

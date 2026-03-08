@@ -19,8 +19,10 @@ class Service extends Model
     protected $fillable = [
         'category_id',
         'name',
+        'name_i18n',
         'slug',
         'description',
+        'description_i18n',
         'duration_minutes',
         'price_from',
         'price_to',
@@ -34,6 +36,8 @@ class Service extends Model
             'is_active' => 'boolean',
             'price_from' => 'decimal:2',
             'price_to' => 'decimal:2',
+            'name_i18n' => 'array',
+            'description_i18n' => 'array',
         ];
     }
 

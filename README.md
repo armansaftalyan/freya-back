@@ -4,7 +4,7 @@ Production-ready backend for a beauty salon with clean layered architecture, API
 
 ## Stack
 - PHP 8.2+
-- Laravel 12 (latest stable in project)
+- Laravel 12
 - MySQL
 - Redis (cache/queue)
 - Sanctum API auth
@@ -19,24 +19,18 @@ Project is split into explicit layers:
 - `app/Http` - controllers, form requests, API resources
 - `app/Admin` - Filament resources/pages/widgets
 
-Key rules:
-- FormRequest validation for API endpoints
-- JsonResource response layer
-- Policies/Gates (`AppointmentPolicy`)
-- SoftDeletes for domain entities
-- strict types in custom code
-
 ## Features (MVP)
 - Auth: register/login/logout/me
 - Roles: `admin`, `manager`, `master`, `client`
-- Catalog: categories, services, masters, branches
+- Catalog: categories, services, masters
 - Appointments:
   - create pending appointment
   - list client appointments
   - cancel appointment
   - overlap prevention for master schedule
   - status transition validation
-- Slot generation by branch working hours + master rules
+  - multi-service booking (`service_ids[]`)
+- Slot generation by master schedule rules
 - Notifications on appointment creation:
   - log
   - Telegram webhook (optional)
@@ -47,7 +41,6 @@ CRUD for:
 - Categories
 - Services
 - Masters
-- Branches
 - Appointments
 - Users + roles
 
@@ -55,11 +48,6 @@ RBAC behavior:
 - `admin`: full access
 - `manager`: all except admin-role management
 - `master`: own appointments + own profile
-
-Dashboard metrics:
-- appointments today/week
-- new clients (week)
-- top service
 
 ## Quick Start (local without Docker)
 1. Install dependencies:
@@ -84,7 +72,6 @@ php artisan serve
 5. Open admin:
 - `http://127.0.0.1:8000/admin`
 - admin login: `admin@gmail.com` / `password`
-- client login (API): `client@example.com` / `password`
 
 ## Docker Run
 ```bash
@@ -101,9 +88,9 @@ Application URL: `http://localhost:8080`
 - `GET /api/categories`
 - `GET /api/services?category_id=`
 - `GET /api/masters?service_id=`
-- `GET /api/branches`
-- `GET /api/slots?branch_id=&service_id=&master_id=&date=`
-- `POST /api/appointments`
+- `GET /api/masters?service_ids[]=1&service_ids[]=2`
+- `GET /api/slots?service_ids[]=1&master_id=&date=`
+- `POST /api/appointments` (guest allowed)
 - `GET /api/appointments/my`
 - `PATCH /api/appointments/{id}/cancel`
 
