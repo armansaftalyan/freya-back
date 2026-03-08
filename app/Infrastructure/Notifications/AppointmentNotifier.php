@@ -39,6 +39,7 @@ class AppointmentNotifier
             'Новая онлайн-запись',
             sprintf('Заказ: %s', $orderLabel),
             sprintf('Запись: #%d', (int) $appointment->id),
+            sprintf('Ссылка: %s', $this->appointmentAdminUrl((int) $appointment->id)),
             sprintf('Клиент: %s', $clientName),
             sprintf('Телефон: %s', $clientPhone),
             sprintf('Мастер: %s', $masterName),
@@ -103,5 +104,15 @@ class AppointmentNotifier
             'yandex_maps' => 'Yandex Maps',
             default => $source,
         };
+    }
+
+    private function appointmentAdminUrl(int $appointmentId): string
+    {
+        $baseUrl = rtrim((string) config('app.url', ''), '/');
+        if ($baseUrl === '') {
+            return sprintf('/admin/appointments/%d/edit', $appointmentId);
+        }
+
+        return sprintf('%s/admin/appointments/%d/edit', $baseUrl, $appointmentId);
     }
 }
