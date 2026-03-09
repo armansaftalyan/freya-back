@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->timestamps();
 
             $table->unique(['master_id', 'service_id']);
+            $table->index(['service_id', 'master_id']);
         });
     }
 

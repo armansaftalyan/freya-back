@@ -6,57 +6,44 @@ namespace App\Http\Controllers\Api;
 
 use App\Domain\Salon\Models\Category;
 use App\Domain\Salon\Models\Master;
-use App\Domain\Salon\Models\Service;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\CategoryResource;
 use App\Http\Resources\Api\MasterResource;
 use App\Http\Resources\Api\ServiceResource;
+use App\Support\Cache\CatalogCache;
+use App\Support\Salon\ServiceIds;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CatalogController extends Controller
 {
+    public function __construct(private readonly CatalogCache $catalogCache)
+    {
+    }
+
     public function categories(): AnonymousResourceCollection
     {
         return CategoryResource::collection(
-            Category::query()->where('is_active', true)->orderBy('sort')->get()
+            $this->catalogCache->rememberCategories()
         );
     }
 
     public function services(Request $request): AnonymousResourceCollection
     {
+        $categoryId = $request->integer('category_id');
+
         return ServiceResource::collection(
-            Service::query()
-                ->where('is_active', true)
-                ->when($request->integer('category_id'), fn ($q, $categoryId) => $q->where('category_id', $categoryId))
-                ->orderBy('sort')
-                ->get()
+            $this->catalogCache->rememberServices($categoryId > 0 ? $categoryId : null)
         );
     }
 
     public function masters(Request $request): AnonymousResourceCollection
     {
-        $serviceIds = collect((array) $request->input('service_ids', []))
-            ->map(fn ($value) => (int) $value)
-            ->filter(fn (int $id) => $id > 0)
-            ->unique()
-            ->values();
-
-        if ($serviceIds->isEmpty() && $request->integer('service_id')) {
-            $serviceIds = collect([$request->integer('service_id')]);
-        }
+        $serviceIds = ServiceIds::fromPayload($request->all(), 'service_ids', 'service_id');
 
         return MasterResource::collection(
-            Master::query()
-                ->where('is_active', true)
-                ->when($serviceIds->isNotEmpty(), function ($query) use ($serviceIds): void {
-                    foreach ($serviceIds as $serviceId) {
-                        $query->whereHas('services', fn ($q) => $q->where('services.id', $serviceId));
-                    }
-                })
-                ->orderBy('sort')
-                ->get()
+            $this->catalogCache->rememberMasters($serviceIds->all())
         );
     }
 

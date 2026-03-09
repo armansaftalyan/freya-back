@@ -11,6 +11,7 @@ use App\Domain\Salon\Models\Master;
 use App\Domain\Salon\Models\Service;
 use App\Domain\Users\Models\User;
 use App\Infrastructure\Notifications\AppointmentNotifier;
+use App\Support\Salon\ServiceIds;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -28,15 +29,7 @@ class AppointmentService
     /** @param array{master_id:int,service_id?:int,service_ids?:array<int,int>,start_at:string,comment?:string,source?:string,guest_name?:string,guest_phone?:string,booking_order_id?:int|null} $payload */
     public function create(User $client, array $payload): Appointment
     {
-        $serviceIds = collect($payload['service_ids'] ?? [])
-            ->map(fn ($value) => (int) $value)
-            ->filter(fn (int $id) => $id > 0)
-            ->unique()
-            ->values();
-
-        if ($serviceIds->isEmpty() && isset($payload['service_id'])) {
-            $serviceIds = collect([(int) $payload['service_id']]);
-        }
+        $serviceIds = ServiceIds::fromPayload($payload, 'service_ids', 'service_id');
 
         if ($serviceIds->isEmpty()) {
             throw ValidationException::withMessages([

@@ -11,6 +11,7 @@ use App\Domain\Salon\Models\Service;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Slot\ComboSlotsRequest;
 use App\Http\Requests\Api\Slot\SlotsQueryRequest;
+use App\Support\Salon\ServiceIds;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
@@ -26,11 +27,7 @@ class SlotController extends Controller
     {
         $master = Master::query()->with('services')->findOrFail($request->integer('master_id'));
         $date = Carbon::createFromFormat('Y-m-d', (string) $request->string('date'));
-        $serviceIds = collect((array) $request->input('service_ids'))
-            ->map(fn ($value) => (int) $value)
-            ->filter(fn (int $id) => $id > 0)
-            ->unique()
-            ->values();
+        $serviceIds = ServiceIds::fromArray((array) $request->input('service_ids'));
 
         $services = Service::query()->whereIn('id', $serviceIds)->get()->keyBy('id');
         if ($services->count() !== $serviceIds->count()) {

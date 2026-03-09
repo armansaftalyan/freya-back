@@ -17,6 +17,7 @@ class SlotGenerationService
     {
         $dayKey = strtolower($date->englishDayOfWeek);
         $masterRules = $master->schedule_rules[$dayKey] ?? [];
+        $busyIntervals = $this->busyIntervalsForDay($master->id, $date);
 
         if (empty($masterRules)) {
             $masterRules = [['start' => '10:00', 'end' => '19:00']];
@@ -49,7 +50,7 @@ class SlotGenerationService
                 $start = $cursor->copy();
                 $end = $cursor->copy()->addMinutes($duration);
 
-                if (! $this->hasConflict($master->id, $start, $end)) {
+                if (! $this->hasConflictInIntervals($busyIntervals, $start->getTimestamp(), $end->getTimestamp())) {
                     $slots[] = [
                         'start_at' => $start->toIso8601String(),
                         'end_at' => $end->toIso8601String(),
@@ -71,5 +72,42 @@ class SlotGenerationService
                     ->where('end_at', '>', $startAt);
             })
             ->exists();
+    }
+
+    /**
+     * @return array<int, array{start:int,end:int}>
+     */
+    private function busyIntervalsForDay(int $masterId, Carbon $date): array
+    {
+        $dayStart = $date->copy()->startOfDay();
+        $dayEnd = $date->copy()->endOfDay();
+
+        return Appointment::query()
+            ->where('master_id', $masterId)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->where('start_at', '<', $dayEnd)
+            ->where('end_at', '>', $dayStart)
+            ->orderBy('start_at')
+            ->get(['start_at', 'end_at'])
+            ->map(fn (Appointment $appointment): array => [
+                'start' => $appointment->start_at->getTimestamp(),
+                'end' => $appointment->end_at->getTimestamp(),
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param array<int, array{start:int,end:int}> $busyIntervals
+     */
+    private function hasConflictInIntervals(array $busyIntervals, int $startTs, int $endTs): bool
+    {
+        foreach ($busyIntervals as $interval) {
+            if ($interval['start'] < $endTs && $interval['end'] > $startTs) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

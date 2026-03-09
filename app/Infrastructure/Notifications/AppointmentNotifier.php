@@ -6,6 +6,7 @@ namespace App\Infrastructure\Notifications;
 
 use App\Domain\Salon\Models\Appointment;
 use App\Infrastructure\Integrations\Telegram\TelegramWebhookClient;
+use App\Jobs\SendAppointmentCreatedNotifications;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Log;
@@ -19,6 +20,11 @@ class AppointmentNotifier
     }
 
     public function notifyCreated(Appointment $appointment): void
+    {
+        SendAppointmentCreatedNotifications::dispatch((int) $appointment->id)->afterCommit();
+    }
+
+    public function deliverCreated(Appointment $appointment): void
     {
         $appointment->loadMissing(['client', 'master', 'service', 'services', 'bookingOrder']);
 

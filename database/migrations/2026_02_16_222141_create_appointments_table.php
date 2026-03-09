@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['master_id', 'start_at', 'end_at']);
+            $table->index(['master_id', 'status', 'start_at', 'end_at']);
             $table->index(['client_id', 'start_at']);
             $table->index(['status']);
         });
