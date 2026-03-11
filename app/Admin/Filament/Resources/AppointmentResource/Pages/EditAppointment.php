@@ -30,6 +30,9 @@ class EditAppointment extends EditRecord
                         ->label(__('messages.filament.gift_payment.token'))
                         ->placeholder(__('messages.filament.gift_payment.token_placeholder'))
                         ->required()
+                        ->extraInputAttributes([
+                            'data-gift-payment-token' => '1',
+                        ])
                         ->live(debounce: 400)
                         ->afterStateUpdated(function ($state, callable $set): void {
                             $giftCard = app(GiftCardService::class)->findByQrToken((string) ($state ?? ''));
