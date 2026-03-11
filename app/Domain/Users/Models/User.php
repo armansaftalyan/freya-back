@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Users\Models;
 
 use App\Domain\Salon\Models\Appointment;
+use App\Domain\Salon\Models\GiftCard;
+use App\Domain\Salon\Models\GiftCardOrder;
+use App\Domain\Salon\Models\GiftCardTransaction;
 use App\Domain\Salon\Models\Master;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -53,6 +56,21 @@ class User extends Authenticatable implements FilamentUser
     public function masterProfile(): HasOne
     {
         return $this->hasOne(Master::class);
+    }
+
+    public function giftCards(): HasMany
+    {
+        return $this->hasMany(GiftCard::class, 'owner_user_id');
+    }
+
+    public function giftCardOrders(): HasMany
+    {
+        return $this->hasMany(GiftCardOrder::class, 'buyer_user_id');
+    }
+
+    public function giftCardTransactions(): HasMany
+    {
+        return $this->hasMany(GiftCardTransaction::class, 'performed_by_user_id');
     }
 
     public function canAccessPanel(Panel $panel): bool

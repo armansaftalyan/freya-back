@@ -31,4 +31,15 @@ return [
     'appointments' => [
         'send_email_to_client' => (bool) env('APPOINTMENT_SEND_EMAIL_TO_CLIENT', false),
     ],
+
+    'gift_cards' => [
+        'webhook_token' => env('GIFT_CARD_WEBHOOK_TOKEN'),
+        'auto_mark_paid' => (bool) env('GIFT_CARD_AUTO_MARK_PAID', false),
+    ],
+
+    'idram' => [
+        'action_url' => env('IDRAM_ACTION_URL', 'https://banking.idram.am/Payment/GetPayment'),
+        'rec_account' => env('IDRAM_REC_ACCOUNT'),
+        'secret_key' => env('IDRAM_SECRET_KEY'),
+    ],
 ];
