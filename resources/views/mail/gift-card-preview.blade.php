@@ -25,22 +25,29 @@
                         <div style="font-size:13px;color:#5b5149;margin-bottom:10px;">Card styles from frontend:</div>
                         <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                             <tr>
-                                <td style="padding-bottom:10px;">
-                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-radius:18px;overflow:hidden;background:linear-gradient(140deg,#121212 0%,#2b2217 32%,#7e5925 68%,#d7a24b 100%);color:#fff;box-shadow:0 14px 30px rgba(0,0,0,.25);">
+                                <td align="center" style="padding-bottom:10px;">
+                                    <table role="presentation" width="360" cellspacing="0" cellpadding="0" style="width:360px;max-width:100%;border-radius:18px;overflow:hidden;background:linear-gradient(140deg,#121212 0%,#2b2217 32%,#7e5925 68%,#d7a24b 100%);color:#fff;box-shadow:0 14px 30px rgba(0,0,0,.25);">
                                         <tr>
-                                            <td style="padding:16px;vertical-align:top;">
+                                            <td style="padding:14px 14px 12px 14px;vertical-align:top;">
                                                 <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:.85;">Gold</div>
-                                                <div style="font-size:30px;font-weight:700;margin-top:10px;line-height:1;">{{ $formattedAmount }} {{ $currency }}</div>
-                                                <div style="margin-top:10px;height:1px;background:rgba(255,255,255,.25);"></div>
-                                                <div style="font-size:12px;margin-top:14px;opacity:.95;">Freya Beauty Gift Card</div>
+                                                <div style="font-size:25px;font-weight:700;margin-top:8px;line-height:1;">{{ $formattedAmount }} {{ $currency }}</div>
+                                                <div style="margin-top:8px;height:1px;background:rgba(255,255,255,.25);"></div>
+                                                <div style="font-size:11px;margin-top:12px;opacity:.95;">Freya Beauty Gift Card</div>
                                                 <div style="font-size:11px;margin-top:6px;opacity:.85;">{{ $code }}</div>
-                                                <div style="font-size:11px;margin-top:16px;opacity:.9;">Use in salon with QR scan</div>
+                                                <div style="font-size:10px;margin-top:12px;opacity:.9;">Use in salon with QR scan</div>
                                             </td>
-                                            <td width="100" style="padding:16px;vertical-align:top;">
-                                                <table role="presentation" width="88" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
+                                            <td width="92" style="padding:14px 14px 12px 0;vertical-align:top;">
+                                                <table role="presentation" width="40" cellspacing="0" cellpadding="0" style="margin-left:auto;margin-bottom:8px;background:rgba(255,255,255,.92);border-radius:10px;">
                                                     <tr>
                                                         <td style="padding:6px;">
-                                                            <img src="{{ $qrImageUrl }}" alt="QR code" width="76" height="76" style="display:block;border:0;width:76px;height:76px;">
+                                                            <img src="{{ $logoUrl }}" alt="Freya" width="28" height="28" style="display:block;border:0;width:28px;height:28px;border-radius:6px;">
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <table role="presentation" width="78" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
+                                                    <tr>
+                                                        <td style="padding:6px;">
+                                                            <img src="{{ $qrImageUrl }}" alt="QR code" width="66" height="66" style="display:block;border:0;width:66px;height:66px;">
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -50,22 +57,29 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding-bottom:10px;">
-                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-radius:18px;overflow:hidden;background:linear-gradient(145deg,#0b0b0b 0%,#1a1a1a 36%,#313131 100%);color:#fff;box-shadow:0 14px 30px rgba(0,0,0,.25);">
+                                <td align="center" style="padding-bottom:10px;">
+                                    <table role="presentation" width="360" cellspacing="0" cellpadding="0" style="width:360px;max-width:100%;border-radius:18px;overflow:hidden;background:linear-gradient(145deg,#0b0b0b 0%,#1a1a1a 36%,#313131 100%);color:#fff;box-shadow:0 14px 30px rgba(0,0,0,.25);">
                                         <tr>
-                                            <td style="padding:16px;vertical-align:top;">
+                                            <td style="padding:14px 14px 12px 14px;vertical-align:top;">
                                                 <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:.85;">Black</div>
-                                                <div style="font-size:30px;font-weight:700;margin-top:10px;line-height:1;">{{ $formattedAmount }} {{ $currency }}</div>
-                                                <div style="margin-top:10px;height:1px;background:rgba(255,255,255,.25);"></div>
-                                                <div style="font-size:12px;margin-top:14px;opacity:.95;">Freya Beauty Gift Card</div>
+                                                <div style="font-size:25px;font-weight:700;margin-top:8px;line-height:1;">{{ $formattedAmount }} {{ $currency }}</div>
+                                                <div style="margin-top:8px;height:1px;background:rgba(255,255,255,.25);"></div>
+                                                <div style="font-size:11px;margin-top:12px;opacity:.95;">Freya Beauty Gift Card</div>
                                                 <div style="font-size:11px;margin-top:6px;opacity:.85;">{{ $code }}</div>
-                                                <div style="font-size:11px;margin-top:16px;opacity:.9;">Use in salon with QR scan</div>
+                                                <div style="font-size:10px;margin-top:12px;opacity:.9;">Use in salon with QR scan</div>
                                             </td>
-                                            <td width="100" style="padding:16px;vertical-align:top;">
-                                                <table role="presentation" width="88" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
+                                            <td width="92" style="padding:14px 14px 12px 0;vertical-align:top;">
+                                                <table role="presentation" width="40" cellspacing="0" cellpadding="0" style="margin-left:auto;margin-bottom:8px;background:rgba(255,255,255,.92);border-radius:10px;">
                                                     <tr>
                                                         <td style="padding:6px;">
-                                                            <img src="{{ $qrImageUrl }}" alt="QR code" width="76" height="76" style="display:block;border:0;width:76px;height:76px;">
+                                                            <img src="{{ $logoUrl }}" alt="Freya" width="28" height="28" style="display:block;border:0;width:28px;height:28px;border-radius:6px;">
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <table role="presentation" width="78" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
+                                                    <tr>
+                                                        <td style="padding:6px;">
+                                                            <img src="{{ $qrImageUrl }}" alt="QR code" width="66" height="66" style="display:block;border:0;width:66px;height:66px;">
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -75,22 +89,29 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>
-                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-radius:18px;overflow:hidden;background:linear-gradient(145deg,#2b1119 0%,#6b2338 42%,#d77a9a 100%);color:#fff;box-shadow:0 14px 30px rgba(0,0,0,.25);">
+                                <td align="center">
+                                    <table role="presentation" width="360" cellspacing="0" cellpadding="0" style="width:360px;max-width:100%;border-radius:18px;overflow:hidden;background:linear-gradient(145deg,#2b1119 0%,#6b2338 42%,#d77a9a 100%);color:#fff;box-shadow:0 14px 30px rgba(0,0,0,.25);">
                                         <tr>
-                                            <td style="padding:16px;vertical-align:top;">
+                                            <td style="padding:14px 14px 12px 14px;vertical-align:top;">
                                                 <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:.85;">Rose</div>
-                                                <div style="font-size:30px;font-weight:700;margin-top:10px;line-height:1;">{{ $formattedAmount }} {{ $currency }}</div>
-                                                <div style="margin-top:10px;height:1px;background:rgba(255,255,255,.25);"></div>
-                                                <div style="font-size:12px;margin-top:14px;opacity:.95;">Freya Beauty Gift Card</div>
+                                                <div style="font-size:25px;font-weight:700;margin-top:8px;line-height:1;">{{ $formattedAmount }} {{ $currency }}</div>
+                                                <div style="margin-top:8px;height:1px;background:rgba(255,255,255,.25);"></div>
+                                                <div style="font-size:11px;margin-top:12px;opacity:.95;">Freya Beauty Gift Card</div>
                                                 <div style="font-size:11px;margin-top:6px;opacity:.85;">{{ $code }}</div>
-                                                <div style="font-size:11px;margin-top:16px;opacity:.9;">Use in salon with QR scan</div>
+                                                <div style="font-size:10px;margin-top:12px;opacity:.9;">Use in salon with QR scan</div>
                                             </td>
-                                            <td width="100" style="padding:16px;vertical-align:top;">
-                                                <table role="presentation" width="88" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
+                                            <td width="92" style="padding:14px 14px 12px 0;vertical-align:top;">
+                                                <table role="presentation" width="40" cellspacing="0" cellpadding="0" style="margin-left:auto;margin-bottom:8px;background:rgba(255,255,255,.92);border-radius:10px;">
                                                     <tr>
                                                         <td style="padding:6px;">
-                                                            <img src="{{ $qrImageUrl }}" alt="QR code" width="76" height="76" style="display:block;border:0;width:76px;height:76px;">
+                                                            <img src="{{ $logoUrl }}" alt="Freya" width="28" height="28" style="display:block;border:0;width:28px;height:28px;border-radius:6px;">
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <table role="presentation" width="78" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
+                                                    <tr>
+                                                        <td style="padding:6px;">
+                                                            <img src="{{ $qrImageUrl }}" alt="QR code" width="66" height="66" style="display:block;border:0;width:66px;height:66px;">
                                                         </td>
                                                     </tr>
                                                 </table>
