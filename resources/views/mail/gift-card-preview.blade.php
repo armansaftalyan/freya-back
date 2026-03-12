@@ -75,7 +75,7 @@
                                                 <table role="presentation" width="108" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
                                                     <tr>
                                                         <td style="padding:8px;">
-                                                            <img src="{{ $qrSrc }}" alt="QR code" width="92" height="92" style="display:block;border:0;width:92px;height:92px;">
+                                                            <img src="{{ $qrSrc }}" alt="{{$qrSrc}}" width="92" height="92" style="display:block;border:0;width:92px;height:92px;">
                                                         </td>
                                                     </tr>
                                                 </table>
