@@ -9,7 +9,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Artisan::command('giftcard:test-mail {email} {--name=Arman} {--amount=10000} {--currency=AMD} {--code=FRYA-TEST-0001} {--token=TEST_QR_TOKEN_123}', function () {
+Artisan::command('giftcard:test-mail {email} {--name=Arman} {--amount=10000} {--currency=AMD} {--code=FREYA-TEST-0001} {--token=TEST_QR_TOKEN_123}', function () {
     $email = (string) $this->argument('email');
     $name = (string) $this->option('name');
     $amount = (float) $this->option('amount');
@@ -31,4 +31,4 @@ Artisan::command('giftcard:test-mail {email} {--name=Arman} {--amount=10000} {--
     if ($mailer === 'log') {
         $this->warn('MAIL_MAILER=log, so email was written to logs and not delivered to Gmail.');
     }
-})->purpose('Send gift card preview email with 3 card color themes');
+})->purpose('Send gift card preview email');
