@@ -32,19 +32,20 @@
                             linear-gradient(140deg,#121212 0%,#2b2217 32%,#7e5925 68%,#d7a24b 100%);
                             color:#ffffff;box-shadow:0 20px 50px rgba(10,10,10,.45);">
                             <tr>
-                                <td style="padding:18px 16px 14px 16px;">
+                                <td style="height:227px;padding:20px;vertical-align:top;">
                                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                                         <tr>
                                             <td style="vertical-align:top;padding-right:8px;">
-                                                <div style="font-size:10px;line-height:1.2;letter-spacing:0.22em;text-transform:uppercase;color:rgba(253,242,230,.86);">Freya Beauty նվեր քարտ</div>
-                                                <div style="margin-top:8px;font-size:40px;font-weight:700;line-height:1.02;white-space:nowrap;color:#ffffff;">{{ $formattedAmountOnCard }} {{ $currency }}</div>
+                                                <div style="font-size:10px;line-height:1.2;letter-spacing:0.22em;text-transform:uppercase;color:rgba(253,242,230,.86);">FREYA BEAUTY ՆՎԵՐ ՔԱՐՏ</div>
+                                                <div style="margin-top:8px;font-size:30px;font-weight:700;line-height:1;white-space:nowrap;color:#ffffff;">{{ $formattedAmountOnCard }} {{ $currency }}</div>
                                             </td>
                                             <td width="96" style="vertical-align:top;">
-                                                <table role="presentation" width="46" cellspacing="0" cellpadding="0" style="margin-left:auto;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.45);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.35);">
+                                                <table role="presentation" width="54" cellspacing="0" cellpadding="0" style="margin-left:auto;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.45);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.35);">
                                                     <tr>
-                                                        <td style="padding:5px;text-align:center;">
+                                                        <td style="padding:8px;text-align:center;">
+                                                            <span>{{ $logoSrc }}</span>
                                                             @if ($logoSrc)
-                                                            <img src="{{ $logoSrc }}" alt="Freya logo" width="30" height="30" style="display:block;margin:0 auto;border:0;width:30px;height:30px;border-radius:8px;object-fit:contain;">
+                                                            <img src="{{ $logoSrc }}" alt="Freya logo" width="36" height="36" style="display:block;margin:0 auto;border:0;width:36px;height:36px;border-radius:8px;object-fit:contain;">
                                                             @else
                                                             <span style="display:inline-block;padding:6px 4px;font-size:11px;font-weight:700;color:#111;letter-spacing:0.08em;">FREYA</span>
                                                             @endif
@@ -54,16 +55,16 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td colspan="2" style="padding-top:10px;">
+                                            <td colspan="2" style="padding-top:14px;">
                                                 <div style="height:1px;background:rgba(255,255,255,.25);"></div>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td style="height:90px;vertical-align:bottom;padding-top:8px;">
+                                            <td style="height:96px;vertical-align:bottom;padding-top:12px;">
                                                 <div style="font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(253,242,230,.78);">Freya</div>
-                                                <div style="margin-top:4px;font-size:12px;line-height:1.3;color:rgba(253,242,230,.92);">Օգտագործվում է սրահում QR սկանով</div>
+                                                <div style="margin-top:4px;font-size:14px;line-height:1.3;color:rgba(253,242,230,.92);">Օգտագործվում է սրահում QR սկանով</div>
                                             </td>
-                                            <td width="96" style="vertical-align:bottom;padding-top:8px;">
+                                            <td width="96" style="vertical-align:bottom;padding-top:12px;">
                                                 <table role="presentation" width="88" cellspacing="0" cellpadding="0" style="margin-left:auto;background:#ffffff;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
                                                     <tr>
                                                         <td style="padding:6px;">
