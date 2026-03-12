@@ -43,7 +43,6 @@
                                                 <table role="presentation" width="54" cellspacing="0" cellpadding="0" style="margin-left:auto;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.45);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.35);">
                                                     <tr>
                                                         <td style="padding:8px;text-align:center;">
-                                                            <span>{{ $logoSrc }}</span>
                                                             @if ($logoSrc)
                                                             <img src="{{ $logoSrc }}" alt="Freya logo" width="36" height="36" style="display:block;margin:0 auto;border:0;width:36px;height:36px;border-radius:8px;object-fit:contain;">
                                                             @else
@@ -60,7 +59,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td style="height:96px;vertical-align:bottom;padding-top:12px;">
+                                            <td style="height:96px;vertical-align:bottom;padding-top:62px;">
                                                 <div style="font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(253,242,230,.78);">Freya</div>
                                                 <div style="margin-top:4px;font-size:14px;line-height:1.3;color:rgba(253,242,230,.92);">Օգտագործվում է սրահում QR սկանով</div>
                                             </td>
@@ -68,7 +67,7 @@
                                                 <table role="presentation" width="88" cellspacing="0" cellpadding="0" style="margin-left:auto;background:#ffffff;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
                                                     <tr>
                                                         <td style="padding:6px;">
-                                                            <img src="{{ $qrSrc }}" alt="{{ $qrSrc }}" width="76" height="76" style="display:block;border:0;width:76px;height:76px;">
+                                                            <img src="{{ $qrSrc }}" alt="QR code" width="76" height="76" style="display:block;border:0;width:76px;height:76px;">
                                                         </td>
                                                     </tr>
                                                 </table>
