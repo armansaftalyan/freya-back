@@ -22,8 +22,6 @@ class GiftCardPreviewMail extends Mailable
 
     public function build(): self
     {
-        $appUrl = rtrim((string) config('app.url', 'http://localhost'), '/');
-
         return $this
             ->subject('Gift Card Purchase Preview')
             ->view('mail.gift-card-preview')
@@ -33,13 +31,14 @@ class GiftCardPreviewMail extends Mailable
                 'currency' => $this->currency,
                 'code' => $this->code,
                 'token' => $this->token,
-                'qrImageUrl' => $this->qrImageUrl($appUrl),
-                'logoUrl' => $appUrl.'/logo.png',
+                'qrImageUrl' => $this->qrImageUrl(),
             ]);
     }
 
-    private function qrImageUrl(string $appUrl): string
+    private function qrImageUrl(): string
     {
-        return $appUrl.'/mail/qr/'.urlencode((string) $this->token).'.png';
+        $baseUrl = rtrim((string) config('app.url'), '/');
+
+        return $baseUrl.'/mail/qr/'.urlencode((string) $this->token).'.png';
     }
 }

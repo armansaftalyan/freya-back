@@ -37,7 +37,12 @@ class GiftCardTestSeeder extends Seeder
             ]
         );
 
-        app(GiftCardService::class)->issueFromPaidOrder($order);
+        $giftCard = app(GiftCardService::class)->issueFromPaidOrder($order);
+
+        // Keep a predictable token in seeded environments for QR testing.
+        $seedToken = 'seed-gift-card-'.$order->id.'-test-token';
+        $giftCard->forceFill([
+            'qr_token' => $seedToken,
+        ])->save();
     }
 }
-

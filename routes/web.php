@@ -3,7 +3,10 @@
 declare(strict_types=1);
 
 use Filament\Facades\Filament;
-use Illuminate\Support\Facades\Http;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\RoundBlockSizeMode;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,14 +26,17 @@ Route::get('/mail/qr/{token}.png', function (string $token) {
         abort(404);
     }
 
-    $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='.urlencode($decoded);
-    $response = Http::timeout(10)->get($qrUrl);
-    if (! $response->successful()) {
-        abort(404);
-    }
+    $result = Builder::create()
+        ->data($decoded)
+        ->encoding(new Encoding('UTF-8'))
+        ->errorCorrectionLevel(ErrorCorrectionLevel::Medium)
+        ->size(220)
+        ->margin(10)
+        ->roundBlockSizeMode(RoundBlockSizeMode::Margin)
+        ->build();
 
-    return response($response->body(), 200, [
-        'Content-Type' => 'image/png',
+    return response($result->getString(), 200, [
+        'Content-Type' => $result->getMimeType(),
         'Cache-Control' => 'public, max-age=86400',
     ]);
-})->where('token', '.*');
+})->where('token', '.*')->name('mail.qr');
