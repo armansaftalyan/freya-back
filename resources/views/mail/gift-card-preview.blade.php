@@ -1,6 +1,5 @@
 @php
     $formattedAmount = number_format((float) $amount, 0, '.', ' ');
-    $qrCid = isset($qrPngData) && $qrPngData ? $message->embedData($qrPngData, 'gift-card-qr.png', 'image/png') : null;
 @endphp
 <!doctype html>
 <html lang="en">
@@ -41,11 +40,7 @@
                                                 <table role="presentation" width="88" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
                                                     <tr>
                                                         <td style="padding:6px;">
-                                                            @if($qrCid)
-                                                                <img src="{{ $qrCid }}" alt="QR code" width="76" height="76" style="display:block;border:0;width:76px;height:76px;">
-                                                            @else
-                                                                <div style="width:76px;height:76px;background:#f3f3f3;border-radius:6px;"></div>
-                                                            @endif
+                                                            <img src="{{ $qrImageUrl }}" alt="QR code" width="76" height="76" style="display:block;border:0;width:76px;height:76px;">
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -70,11 +65,7 @@
                                                 <table role="presentation" width="88" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
                                                     <tr>
                                                         <td style="padding:6px;">
-                                                            @if($qrCid)
-                                                                <img src="{{ $qrCid }}" alt="QR code" width="76" height="76" style="display:block;border:0;width:76px;height:76px;">
-                                                            @else
-                                                                <div style="width:76px;height:76px;background:#f3f3f3;border-radius:6px;"></div>
-                                                            @endif
+                                                            <img src="{{ $qrImageUrl }}" alt="QR code" width="76" height="76" style="display:block;border:0;width:76px;height:76px;">
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -99,11 +90,7 @@
                                                 <table role="presentation" width="88" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
                                                     <tr>
                                                         <td style="padding:6px;">
-                                                            @if($qrCid)
-                                                                <img src="{{ $qrCid }}" alt="QR code" width="76" height="76" style="display:block;border:0;width:76px;height:76px;">
-                                                            @else
-                                                                <div style="width:76px;height:76px;background:#f3f3f3;border-radius:6px;"></div>
-                                                            @endif
+                                                            <img src="{{ $qrImageUrl }}" alt="QR code" width="76" height="76" style="display:block;border:0;width:76px;height:76px;">
                                                         </td>
                                                     </tr>
                                                 </table>

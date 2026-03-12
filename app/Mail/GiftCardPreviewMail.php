@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Mail\Mailable;
 
 class GiftCardPreviewMail extends Mailable
@@ -32,23 +31,12 @@ class GiftCardPreviewMail extends Mailable
                 'currency' => $this->currency,
                 'code' => $this->code,
                 'token' => $this->token,
-                'qrPngData' => $this->qrPngData(),
+                'qrImageUrl' => $this->qrImageUrl(),
             ]);
     }
 
-    private function qrPngData(): ?string
+    private function qrImageUrl(): string
     {
-        $qrUrl = 'https://quickchart.io/qr?size=220&format=png&text='.urlencode((string) $this->token);
-
-        try {
-            $response = Http::timeout(10)->get($qrUrl);
-            if (! $response->successful()) {
-                return null;
-            }
-
-            return (string) $response->body();
-        } catch (\Throwable) {
-            return null;
-        }
+        return 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='.urlencode((string) $this->token);
     }
 }
