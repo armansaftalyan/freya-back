@@ -59,13 +59,14 @@ class GiftCardPreviewMail extends Mailable
 
     private function qrImagePng(string $payload): string
     {
-        return Builder::create()
-            ->data($payload)
-            ->encoding(new Encoding('UTF-8'))
-            ->errorCorrectionLevel(ErrorCorrectionLevel::Medium)
-            ->size(220)
-            ->margin(10)
-            ->roundBlockSizeMode(RoundBlockSizeMode::Margin)
+        return (new Builder(
+            data: $payload,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::Medium,
+            size: 220,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+        ))
             ->build()
             ->getString();
     }

@@ -26,14 +26,14 @@ Route::get('/mail/qr/{token}.png', function (string $token) {
         abort(404);
     }
 
-    $result = Builder::create()
-        ->data($decoded)
-        ->encoding(new Encoding('UTF-8'))
-        ->errorCorrectionLevel(ErrorCorrectionLevel::Medium)
-        ->size(220)
-        ->margin(10)
-        ->roundBlockSizeMode(RoundBlockSizeMode::Margin)
-        ->build();
+    $result = (new Builder(
+        data: $decoded,
+        encoding: new Encoding('UTF-8'),
+        errorCorrectionLevel: ErrorCorrectionLevel::Medium,
+        size: 220,
+        margin: 10,
+        roundBlockSizeMode: RoundBlockSizeMode::Margin,
+    ))->build();
 
     return response($result->getString(), 200, [
         'Content-Type' => $result->getMimeType(),
