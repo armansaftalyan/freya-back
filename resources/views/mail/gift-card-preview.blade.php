@@ -43,11 +43,7 @@
                                                 <table role="presentation" width="54" cellspacing="0" cellpadding="0" style="margin-left:auto;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.45);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.35);">
                                                     <tr>
                                                         <td style="padding:8px;text-align:center;">
-                                                            @if ($logoSrc)
-                                                            <img src="{{ $logoSrc }}" alt="Freya logo" width="36" height="36" style="display:block;margin:0 auto;border:0;width:36px;height:36px;border-radius:8px;object-fit:contain;">
-                                                            @else
-                                                            <span style="display:inline-block;padding:6px 4px;font-size:11px;font-weight:700;color:#111;letter-spacing:0.08em;">FREYA</span>
-                                                            @endif
+                                                            <img src="{{ $logoSrc }}" alt="{{$logoSrc}}" width="36" height="36" style="display:block;margin:0 auto;border:0;width:36px;height:36px;border-radius:8px;object-fit:contain;">
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -67,7 +63,7 @@
                                                 <table role="presentation" width="88" cellspacing="0" cellpadding="0" style="margin-left:auto;background:#ffffff;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
                                                     <tr>
                                                         <td style="padding:6px;">
-                                                            <img src="{{ $qrSrc }}" alt="QR code" width="76" height="76" style="display:block;border:0;width:76px;height:76px;">
+                                                            <img src="{{ $qrSrc }}" alt="{{ $qrSrc }}" width="76" height="76" style="display:block;border:0;width:76px;height:76px;">
                                                         </td>
                                                     </tr>
                                                 </table>
