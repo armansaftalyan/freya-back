@@ -1,5 +1,13 @@
 @php
     $formattedAmount = number_format((float) $amount, 0, '.', ' ');
+    $qrSrc = $qrImageUrl;
+    if (isset($message) && !empty($qrImagePng ?? null)) {
+        $qrSrc = $message->embedData($qrImagePng, 'gift-card-qr.png', 'image/png');
+    }
+    $logoSrc = null;
+    if (isset($message) && !empty($logoImagePng ?? null)) {
+        $logoSrc = $message->embedData($logoImagePng, 'freya-logo.png', 'image/png');
+    }
     $cardThemes = [
         [
             'label' => 'Gold',
@@ -55,15 +63,19 @@
                                             <td width="136" style="padding:20px 20px 18px 0;vertical-align:top;">
                                                 <table role="presentation" width="56" cellspacing="0" cellpadding="0" style="margin-left:auto;margin-bottom:10px;background:rgba(255,255,255,.92);border-radius:14px;">
                                                     <tr>
-                                                        <td style="padding:8px 10px;text-align:center;font-size:11px;font-weight:700;color:#111;letter-spacing:0.08em;">
-                                                            FRYA
+                                                        <td style="padding:6px;text-align:center;">
+                                                            @if ($logoSrc)
+                                                            <img src="{{ $logoSrc }}" alt="Freya" width="36" height="36" style="display:block;margin:0 auto;border:0;width:36px;height:36px;border-radius:8px;">
+                                                            @else
+                                                            <span style="display:inline-block;padding:6px 4px;font-size:11px;font-weight:700;color:#111;letter-spacing:0.08em;">FREYA</span>
+                                                            @endif
                                                         </td>
                                                     </tr>
                                                 </table>
                                                 <table role="presentation" width="108" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.28);">
                                                     <tr>
                                                         <td style="padding:8px;">
-                                                            <img src="{{ $qrImageUrl }}" alt="QR code" width="92" height="92" style="display:block;border:0;width:92px;height:92px;">
+                                                            <img src="{{ $qrSrc }}" alt="QR code" width="92" height="92" style="display:block;border:0;width:92px;height:92px;">
                                                         </td>
                                                     </tr>
                                                 </table>
