@@ -15,6 +15,7 @@ class GiftCardResource extends JsonResource
             'id' => $this->id,
             'code' => $this->code,
             'qr_token' => $this->qr_token,
+            'image_url' => url('/gift-cards/'.urlencode((string) $this->qr_token).'/image.png'),
             'owner_user_id' => $this->owner_user_id,
             'gift_card_order_id' => $this->gift_card_order_id,
             'initial_amount' => (float) $this->initial_amount,
