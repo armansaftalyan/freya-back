@@ -55,12 +55,12 @@ class GiftCardImageRenderer
             50,
             0,
             46,
-            136,
+            154,
             $amountColor,
             $this->formatAmount($amount, $currency)
         );
 
-        $this->drawQrBadge($image, $token, 844, 426, 154, 154);
+        $this->drawQrBadge($image, $token, 876, 404, 154, 154);
 
         ob_start();
         imagepng($image);
