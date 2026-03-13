@@ -9,13 +9,15 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Artisan::command('giftcard:test-mail {email} {--name=Arman} {--amount=10000} {--currency=AMD} {--code=FREYA-TEST-0001} {--token=TEST_QR_TOKEN_123}', function () {
+Artisan::command('giftcard:test-mail {email} {--name=Arman} {--amount=10000} {--currency=AMD} {--code=FREYA-TEST-0001} {--token=TEST_QR_TOKEN_123} {--theme=gold} {--locale=en}', function () {
     $email = (string) $this->argument('email');
     $name = (string) $this->option('name');
     $amount = (float) $this->option('amount');
     $currency = (string) $this->option('currency');
     $code = (string) $this->option('code');
     $token = (string) $this->option('token');
+    $theme = (string) $this->option('theme');
+    $locale = (string) $this->option('locale');
 
     Mail::to($email)->send(new GiftCardPreviewMail(
         recipientName: $name,
@@ -23,6 +25,8 @@ Artisan::command('giftcard:test-mail {email} {--name=Arman} {--amount=10000} {--
         currency: $currency,
         code: $code,
         token: $token,
+        theme: $theme,
+        locale: $locale,
     ));
 
     $mailer = (string) config('mail.default');

@@ -25,11 +25,14 @@ class GiftCardOrderController extends Controller
         $paymentProvider = $request->string('payment_provider')->toString() ?: 'manual';
         $testForcedAmount = (float) config('services.idram.test_force_amount', 0);
         $idramPayableAmount = $paymentProvider === 'idram' && $testForcedAmount > 0 ? $testForcedAmount : $requestedAmount;
+        $locale = $request->string('locale')->toString() ?: app()->getLocale();
 
         $meta = array_merge(
             (array) $request->input('meta', []),
             [
                 'requested_amount' => $requestedAmount,
+                'theme' => $request->string('theme')->toString() ?: 'gold',
+                'locale' => $locale,
                 'sender_name' => $request->string('sender_name')->toString() ?: null,
                 'sender_email' => $request->string('sender_email')->toString() ?: null,
                 'message' => $request->string('message')->toString() ?: null,

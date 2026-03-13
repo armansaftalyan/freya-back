@@ -20,26 +20,31 @@ class GiftCardPreviewMail extends Mailable
         public readonly string $currency,
         public readonly string $code,
         public readonly string $token,
+        public readonly string $theme = 'gold',
+        public readonly string $locale = 'en',
     ) {
     }
 
     public function build(): self
     {
         $cardImagePng = $this->cardImagePng();
+        $locale = $this->normalizeLocale($this->locale);
+        $copy = $this->copy($locale);
 
         return $this
-            ->subject('Gift Card Purchase Preview')
+            ->subject($copy['subject'])
             ->view('mail.gift-card-preview')
             ->attachData($cardImagePng, $this->attachmentFileName(), [
                 'mime' => 'image/png',
             ])
             ->with([
+                'locale' => $locale,
+                'copy' => $copy,
                 'recipientName' => $this->recipientName,
                 'amount' => $this->amount,
                 'currency' => $this->currency,
                 'code' => $this->code,
                 'token' => $this->token,
-                'cardImagePng' => $cardImagePng,
             ]);
     }
 
@@ -54,6 +59,7 @@ class GiftCardPreviewMail extends Mailable
             currency: $this->currency,
             code: $this->code,
             token: $this->token,
+            theme: $this->theme,
         );
     }
 
@@ -61,5 +67,43 @@ class GiftCardPreviewMail extends Mailable
     {
         $safeCode = preg_replace('/[^A-Za-z0-9_-]+/', '-', $this->code) ?: 'gift-card';
         return $safeCode.'.png';
+    }
+
+    private function normalizeLocale(string $locale): string
+    {
+        return match (strtolower(trim($locale))) {
+            'ru', 'hy', 'en' => strtolower(trim($locale)),
+            default => 'en',
+        };
+    }
+
+    private function copy(string $locale): array
+    {
+        return match ($locale) {
+            'ru' => [
+                'subject' => 'Подарочная карта Freya Beauty',
+                'title' => 'Подарочная карта Freya Beauty',
+                'intro' => 'Здравствуйте, :name. Ваша подарочная карта готова.',
+                'amount' => 'Сумма',
+                'code' => 'Код',
+                'attachment_notice' => 'Карта прикреплена к письму в PNG-файле.',
+            ],
+            'hy' => [
+                'subject' => 'Freya Beauty նվեր քարտ',
+                'title' => 'Freya Beauty նվեր քարտ',
+                'intro' => 'Բարեւ, :name։ Ձեր նվեր քարտը պատրաստ է։',
+                'amount' => 'Գումար',
+                'code' => 'Կոդ',
+                'attachment_notice' => 'Քարտը կցված է նամակին PNG ֆայլով։',
+            ],
+            default => [
+                'subject' => 'Freya Beauty Gift Card',
+                'title' => 'Freya Beauty Gift Card',
+                'intro' => 'Hello, :name. Your gift card is ready.',
+                'amount' => 'Amount',
+                'code' => 'Code',
+                'attachment_notice' => 'The gift card is attached to this email as a PNG file.',
+            ],
+        };
     }
 }

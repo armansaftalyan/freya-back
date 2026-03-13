@@ -11,9 +11,13 @@ use App\Domain\Salon\Models\GiftCard;
 use App\Domain\Salon\Models\GiftCardOrder;
 use App\Domain\Salon\Models\GiftCardTransaction;
 use App\Domain\Users\Models\User;
+use App\Mail\GiftCardPreviewMail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class GiftCardService
 {
@@ -46,6 +50,8 @@ class GiftCardService
                 'recipient_name' => $order->recipient_name,
                 'recipient_email' => $order->recipient_email,
                 'recipient_phone' => $order->recipient_phone,
+                'theme' => data_get($order->meta, 'theme', 'gold'),
+                'locale' => data_get($order->meta, 'locale', app()->getLocale()),
             ],
         ]);
 
@@ -60,6 +66,8 @@ class GiftCardService
                 'provider_payment_id' => $order->provider_payment_id,
             ],
         ]);
+
+        $this->sendIssuedGiftCardEmail($giftCard, $order);
 
         return $giftCard;
     }
@@ -180,5 +188,32 @@ class GiftCardService
         }
 
         return urldecode(trim($token));
+    }
+
+    private function sendIssuedGiftCardEmail(GiftCard $giftCard, GiftCardOrder $order): void
+    {
+        $recipientEmail = trim((string) ($order->recipient_email ?? ''));
+        if ($recipientEmail === '') {
+            return;
+        }
+
+        try {
+            Mail::to($recipientEmail)->send(new GiftCardPreviewMail(
+                recipientName: trim((string) ($order->recipient_name ?? '')) ?: 'Customer',
+                amount: (float) $giftCard->initial_amount,
+                currency: (string) $giftCard->currency,
+                code: (string) $giftCard->code,
+                token: (string) $giftCard->qr_token,
+                theme: (string) data_get($giftCard->meta, 'theme', 'gold'),
+                locale: (string) data_get($giftCard->meta, 'locale', app()->getLocale()),
+            ));
+        } catch (Throwable $exception) {
+            Log::warning('Failed to send gift card email.', [
+                'gift_card_id' => $giftCard->id,
+                'gift_card_order_id' => $order->id,
+                'recipient_email' => $recipientEmail,
+                'error' => $exception->getMessage(),
+            ]);
+        }
     }
 }
