@@ -204,7 +204,7 @@ class GiftCardService
                 currency: (string) $giftCard->currency,
                 code: (string) $giftCard->code,
                 token: (string) $giftCard->qr_token,
-                theme: (string) data_get($giftCard->meta, 'theme', 'gold'),
+                cardTheme: (string) data_get($giftCard->meta, 'theme', 'gold'),
                 mailLocale: (string) data_get($giftCard->meta, 'locale', app()->getLocale()),
             ));
         } catch (Throwable $exception) {

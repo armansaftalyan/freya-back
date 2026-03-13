@@ -20,7 +20,7 @@ class GiftCardPreviewMail extends Mailable
         public readonly string $currency,
         public readonly string $code,
         public readonly string $token,
-        public readonly string $theme = 'gold',
+        public readonly string $cardTheme = 'gold',
         public readonly string $mailLocale = 'en',
     ) {
     }
@@ -59,7 +59,7 @@ class GiftCardPreviewMail extends Mailable
             currency: $this->currency,
             code: $this->code,
             token: $this->token,
-            theme: $this->theme,
+            theme: $this->cardTheme,
         );
     }
 

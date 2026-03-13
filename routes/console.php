@@ -25,7 +25,7 @@ Artisan::command('giftcard:test-mail {email} {--name=Arman} {--amount=10000} {--
         currency: $currency,
         code: $code,
         token: $token,
-        theme: $theme,
+        cardTheme: $theme,
         mailLocale: $locale,
     ));
 
