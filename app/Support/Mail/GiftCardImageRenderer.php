@@ -46,7 +46,7 @@ class GiftCardImageRenderer
         imagecopy($image, $template, 0, 0, 0, 0, $width, $height);
         imagedestroy($template);
 
-        $fontBold = $this->resolveFontPath(true);
+        $fontBold = $this->resolveAmountFontPath(strtoupper($currency) === 'AMD');
         $amountColor = imagecolorallocate($image, 255, 255, 255);
 
         $this->drawText(
@@ -55,7 +55,7 @@ class GiftCardImageRenderer
             50,
             0,
             64,
-            172,
+            188,
             $amountColor,
             $this->formatAmount($amount, $currency)
         );
@@ -173,10 +173,33 @@ class GiftCardImageRenderer
         return null;
     }
 
+    private function resolveAmountFontPath(bool $preferArmenian): ?string
+    {
+        $candidates = $preferArmenian
+            ? [
+                '/usr/share/fonts/truetype/noto/NotoSansArmenian-Bold.ttf',
+                '/usr/share/fonts/truetype/noto/NotoSansArmenian-Regular.ttf',
+                '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+            ]
+            : [
+                '/usr/share/fonts/truetype/noto/NotoSansDisplay-Bold.ttf',
+                '/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf',
+                '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
+            ];
+
+        foreach ($candidates as $candidate) {
+            if (is_file($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return $this->resolveFontPath(true);
+    }
+
     private function formatAmount(float $amount, string $currency): string
     {
         if (strtoupper($currency) === 'AMD') {
-            return number_format($amount, 2, ',', ' ').' ֏';
+            return number_format($amount, 0, '.', ' ').' ֏';
         }
 
         return number_format($amount, 2, ',', ' ').' '.$currency;
