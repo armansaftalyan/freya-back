@@ -33,6 +33,8 @@ Route::post('/slots/combo', [SlotController::class, 'combo']);
 Route::post('/appointments', [AppointmentController::class, 'store']);
 Route::post('/gift-cards/orders', [GiftCardOrderController::class, 'store']);
 Route::post('/gift-cards/orders/webhook', [GiftCardOrderController::class, 'webhook']);
+Route::get('/payments/idram/success', [IdramResultController::class, 'success']);
+Route::get('/payments/idram/fail', [IdramResultController::class, 'fail']);
 Route::post('/payments/idram/result', IdramResultController::class);
 
 Route::middleware('auth:sanctum')->group(function (): void {

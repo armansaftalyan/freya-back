@@ -21,9 +21,15 @@ class GiftCardOrderController extends Controller
 
     public function store(StoreGiftCardOrderRequest $request): JsonResponse
     {
+        $requestedAmount = (float) $request->input('amount');
+        $paymentProvider = $request->string('payment_provider')->toString() ?: 'manual';
+        $testForcedAmount = (float) config('services.idram.test_force_amount', 0);
+        $idramPayableAmount = $paymentProvider === 'idram' && $testForcedAmount > 0 ? $testForcedAmount : $requestedAmount;
+
         $meta = array_merge(
             (array) $request->input('meta', []),
             [
+                'requested_amount' => $requestedAmount,
                 'sender_name' => $request->string('sender_name')->toString() ?: null,
                 'sender_email' => $request->string('sender_email')->toString() ?: null,
                 'message' => $request->string('message')->toString() ?: null,
@@ -36,9 +42,9 @@ class GiftCardOrderController extends Controller
             'recipient_name' => $request->string('recipient_name')->toString() ?: null,
             'recipient_email' => $request->string('recipient_email')->toString() ?: null,
             'recipient_phone' => $request->string('recipient_phone')->toString() ?: null,
-            'amount' => (float) $request->input('amount'),
+            'amount' => $requestedAmount,
             'currency' => strtoupper($request->string('currency')->toString() ?: 'AMD'),
-            'payment_provider' => $request->string('payment_provider')->toString() ?: 'manual',
+            'payment_provider' => $paymentProvider,
             'status' => GiftCardOrderStatus::Pending,
             'meta' => $meta,
         ]);
@@ -62,11 +68,22 @@ class GiftCardOrderController extends Controller
                         'EDP_LANGUAGE' => 'AM',
                         'EDP_REC_ACCOUNT' => $idramAccount,
                         'EDP_DESCRIPTION' => sprintf('Freya gift card order #%d', $order->id),
-                        'EDP_AMOUNT' => number_format((float) $order->amount, 2, '.', ''),
+                        'EDP_AMOUNT' => number_format($idramPayableAmount, 2, '.', ''),
                         'EDP_BILL_NO' => (string) $order->id,
                         'EDP_EMAIL' => $order->recipient_email,
                     ],
                 ];
+
+                $order->meta = array_merge(
+                    (array) ($order->meta ?? []),
+                    [
+                        'idram' => [
+                            'expected_amount' => number_format($idramPayableAmount, 2, '.', ''),
+                            'forced_test_amount' => $paymentProvider === 'idram' && $testForcedAmount > 0,
+                        ],
+                    ],
+                );
+                $order->save();
             }
         }
 

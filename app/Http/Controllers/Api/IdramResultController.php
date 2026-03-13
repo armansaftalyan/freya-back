@@ -8,6 +8,7 @@ use App\Application\Salon\Services\GiftCardService;
 use App\Domain\Salon\Enums\GiftCardOrderStatus;
 use App\Domain\Salon\Models\GiftCardOrder;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -24,6 +25,12 @@ class IdramResultController extends Controller
         $account = (string) $request->input('EDP_REC_ACCOUNT', '');
         $amount = (string) $request->input('EDP_AMOUNT', '');
         $expectedAccount = (string) config('services.idram.rec_account', '');
+        $payload = $request->all();
+
+        Log::info('Idram RESULT callback received', [
+            'order_id' => $orderId,
+            'payload' => $payload,
+        ]);
 
         /** @var GiftCardOrder|null $order */
         $order = GiftCardOrder::query()->find($orderId);
@@ -37,12 +44,18 @@ class IdramResultController extends Controller
             return response('ERROR', 400, ['Content-Type' => 'text/plain; charset=utf-8']);
         }
 
-        if ($amount !== number_format((float) $order->amount, 2, '.', '')) {
+        $expectedAmount = (string) data_get($order->meta, 'idram.expected_amount', number_format((float) $order->amount, 2, '.', ''));
+
+        if ($amount !== $expectedAmount) {
             Log::warning('Idram callback rejected: amount mismatch', ['order_id' => $orderId, 'amount' => $amount]);
             return response('ERROR', 400, ['Content-Type' => 'text/plain; charset=utf-8']);
         }
 
         if ($request->input('EDP_PRECHECK') === 'YES') {
+            Log::info('Idram PRECHECK accepted', [
+                'order_id' => $orderId,
+                'payload' => $payload,
+            ]);
             return response('OK', 200, ['Content-Type' => 'text/plain; charset=utf-8']);
         }
 
@@ -92,6 +105,41 @@ class IdramResultController extends Controller
             $this->giftCardService->issueFromPaidOrder($order);
         }
 
+        Log::info('Idram payment confirmed', [
+            'order_id' => $orderId,
+            'payload' => $payload,
+        ]);
+
         return response('OK', 200, ['Content-Type' => 'text/plain; charset=utf-8']);
+    }
+
+    public function success(Request $request): RedirectResponse
+    {
+        Log::info('Idram SUCCESS redirect received', [
+            'payload' => $request->all(),
+        ]);
+
+        return $this->redirectToFrontend($request, 'success');
+    }
+
+    public function fail(Request $request): RedirectResponse
+    {
+        Log::info('Idram FAIL redirect received', [
+            'payload' => $request->all(),
+        ]);
+
+        return $this->redirectToFrontend($request, 'fail');
+    }
+
+    private function redirectToFrontend(Request $request, string $status): RedirectResponse
+    {
+        $frontendUrl = rtrim((string) config('app.frontend_url', config('app.url')), '/');
+        $query = array_filter([
+            'payment_provider' => 'idram',
+            'payment_status' => $status,
+            'order_id' => $request->input('EDP_BILL_NO') ?: $request->input('order_id'),
+        ], static fn (mixed $value): bool => $value !== null && $value !== '');
+
+        return redirect()->away($frontendUrl.'/gift-cards/buy?'.http_build_query($query));
     }
 }

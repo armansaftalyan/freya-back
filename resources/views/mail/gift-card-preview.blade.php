@@ -3,6 +3,12 @@
     $formattedAmountOnCard = number_format((float) $amount, 2, ',', ' ');
     $qrSrc = $qrImageUrl;
     $logoSrc = $logoImageUrl ?? null;
+    if (isset($message) && !empty($qrImagePng ?? null)) {
+        $qrSrc = $message->embedData($qrImagePng, 'freya-gift-card-qr.png', 'image/png');
+    }
+    if (isset($message) && !empty($logoImagePng ?? null)) {
+        $logoSrc = $message->embedData($logoImagePng, 'freya-logo.png', 'image/png');
+    }
 @endphp
 <!doctype html>
 <html lang="en">

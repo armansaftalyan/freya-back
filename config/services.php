@@ -41,5 +41,6 @@ return [
         'action_url' => env('IDRAM_ACTION_URL', 'https://banking.idram.am/Payment/GetPayment'),
         'rec_account' => env('IDRAM_REC_ACCOUNT'),
         'secret_key' => env('IDRAM_SECRET_KEY'),
+        'test_force_amount' => env('IDRAM_TEST_FORCE_AMOUNT'),
     ],
 ];
