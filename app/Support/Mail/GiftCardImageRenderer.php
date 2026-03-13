@@ -46,21 +46,36 @@ class GiftCardImageRenderer
         imagecopy($image, $template, 0, 0, 0, 0, $width, $height);
         imagedestroy($template);
 
-        $fontBold = $this->resolveAmountFontPath(strtoupper($currency) === 'AMD');
+        $isAmd = strtoupper($currency) === 'AMD';
+        $fontBold = $this->resolveAmountFontPath($isAmd);
         $amountColor = imagecolorallocate($image, 255, 255, 255);
+        $amountX = 64;
+        $amountY = 204;
+        $amountText = $this->formatAmount($amount, $currency);
 
         $this->drawText(
             $image,
             $fontBold,
             50,
             0,
-            64,
-            188,
+            $amountX,
+            $amountY,
             $amountColor,
-            $this->formatAmount($amount, $currency)
+            $amountText
         );
 
-        $this->drawQrBadge($image, $token, 862, 386, 154, 154);
+        if ($isAmd) {
+            $this->drawDramSymbol(
+                $image,
+                $fontBold,
+                50,
+                $amountX + $this->measureTextWidth($fontBold, 50, $amountText) + 14,
+                $amountY - 44,
+                $amountColor
+            );
+        }
+
+        $this->drawQrBadge($image, $token, 878, 386, 154, 154);
 
         ob_start();
         imagepng($image);
@@ -126,6 +141,18 @@ class GiftCardImageRenderer
         imagestring($image, 5, $x, max(0, $y - 18), $text, $color);
     }
 
+    private function drawDramSymbol($image, ?string $fontPath, int $size, int $x, int $y, int $color): void
+    {
+        imagesetthickness($image, 5);
+        imageline($image, $x + 18, $y, $x + 18, $y + 54, $color);
+        imageline($image, $x + 36, $y, $x + 36, $y + 54, $color);
+        imageline($image, $x + 18, $y, $x + 36, $y, $color);
+        imageline($image, $x + 18, $y + 54, $x + 36, $y + 54, $color);
+        imageline($image, $x + 8, $y + 18, $x + 46, $y + 18, $color);
+        imageline($image, $x + 8, $y + 36, $x + 46, $y + 36, $color);
+        imagesetthickness($image, 1);
+    }
+
     private function drawRoundedRectangle($image, int $x, int $y, int $width, int $height, int $radius, int $color, bool $filled, int $thickness = 1): void
     {
         if ($filled) {
@@ -177,6 +204,8 @@ class GiftCardImageRenderer
     {
         $candidates = $preferArmenian
             ? [
+                '/usr/share/fonts/truetype/freefont/FreeSansBold.ttf',
+                '/usr/share/fonts/truetype/freefont/FreeSans.ttf',
                 '/usr/share/fonts/truetype/noto/NotoSansArmenian-Bold.ttf',
                 '/usr/share/fonts/truetype/noto/NotoSansArmenian-Regular.ttf',
                 '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
@@ -199,9 +228,21 @@ class GiftCardImageRenderer
     private function formatAmount(float $amount, string $currency): string
     {
         if (strtoupper($currency) === 'AMD') {
-            return number_format($amount, 0, '.', ' ').' ֏';
+            return number_format($amount, 0, '.', ' ');
         }
 
         return number_format($amount, 2, ',', ' ').' '.$currency;
+    }
+
+    private function measureTextWidth(?string $fontPath, int $size, string $text): int
+    {
+        if ($fontPath !== null && is_file($fontPath)) {
+            $box = imagettfbbox($size, 0, $fontPath, $text);
+            if (is_array($box)) {
+                return (int) abs($box[2] - $box[0]);
+            }
+        }
+
+        return strlen($text) * 18;
     }
 }
