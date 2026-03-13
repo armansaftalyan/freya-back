@@ -25,14 +25,26 @@ class GiftCardImageRenderer
             return '';
         }
 
-        $image = @imagecreatefrompng($templatePath);
+        $template = @imagecreatefrompng($templatePath);
+        if ($template === false) {
+            return '';
+        }
+
+        $width = imagesx($template);
+        $height = imagesy($template);
+        $image = imagecreatetruecolor($width, $height);
         if ($image === false) {
+            imagedestroy($template);
             return '';
         }
 
         imagealphablending($image, true);
-        imagesavealpha($image, true);
+        imagesavealpha($image, false);
         imageantialias($image, true);
+        $background = imagecolorallocate($image, 246, 244, 241);
+        imagefilledrectangle($image, 0, 0, $width, $height, $background);
+        imagecopy($image, $template, 0, 0, 0, 0, $width, $height);
+        imagedestroy($template);
 
         $fontBold = $this->resolveFontPath(true);
         $amountColor = imagecolorallocate($image, 255, 255, 255);
@@ -43,12 +55,12 @@ class GiftCardImageRenderer
             50,
             0,
             46,
-            102,
+            136,
             $amountColor,
             $this->formatAmount($amount, $currency)
         );
 
-        $this->drawQrBadge($image, $token, 844, 471, 154, 154);
+        $this->drawQrBadge($image, $token, 844, 426, 154, 154);
 
         ob_start();
         imagepng($image);
