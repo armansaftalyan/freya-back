@@ -21,14 +21,14 @@ class GiftCardPreviewMail extends Mailable
         public readonly string $code,
         public readonly string $token,
         public readonly string $theme = 'gold',
-        public readonly string $locale = 'en',
+        public readonly string $mailLocale = 'en',
     ) {
     }
 
     public function build(): self
     {
         $cardImagePng = $this->cardImagePng();
-        $locale = $this->normalizeLocale($this->locale);
+        $locale = $this->normalizeLocale($this->mailLocale);
         $copy = $this->copy($locale);
 
         return $this

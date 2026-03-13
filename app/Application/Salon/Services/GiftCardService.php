@@ -205,7 +205,7 @@ class GiftCardService
                 code: (string) $giftCard->code,
                 token: (string) $giftCard->qr_token,
                 theme: (string) data_get($giftCard->meta, 'theme', 'gold'),
-                locale: (string) data_get($giftCard->meta, 'locale', app()->getLocale()),
+                mailLocale: (string) data_get($giftCard->meta, 'locale', app()->getLocale()),
             ));
         } catch (Throwable $exception) {
             Log::warning('Failed to send gift card email.', [
