@@ -28,13 +28,15 @@ class GiftCardImageRenderer
             return '';
         }
 
+        imagesavealpha($image, true);
+        imagealphablending($image, true);
         imageantialias($image, true);
 
         [$start, $middle, $end, $glow] = $this->themePalette($theme);
         $this->drawHorizontalGradient($image, $width, $height, $start, $middle, $end);
-        $this->drawGlow($image, 160, 120, 220, [255, 255, 255], 92);
-        $this->drawGlow($image, 1020, 640, 240, $glow, 88);
-        $this->drawDiagonalSheen($image, $width, $height);
+        $this->drawGlow($image, 86, 116, 176, [255, 255, 255], 102);
+        $this->drawGlow($image, 1068, 688, 152, $glow, 102);
+        $this->drawSheen($image, $width, $height);
 
         $whiteSoft = imagecolorallocatealpha($image, 255, 255, 255, 75);
         imageline($image, 72, 214, 1128, 214, $whiteSoft);
@@ -42,21 +44,21 @@ class GiftCardImageRenderer
         $fontBold = $this->resolveFontPath(true);
         $fontRegular = $this->resolveFontPath(false);
 
-        $labelColor = imagecolorallocatealpha($image, 245, 235, 225, 32);
+        $labelColor = imagecolorallocatealpha($image, 245, 235, 225, 30);
         $amountColor = imagecolorallocate($image, 255, 255, 255);
-        $hintColor = imagecolorallocatealpha($image, 245, 235, 225, 22);
+        $hintColor = imagecolorallocatealpha($image, 245, 235, 225, 18);
 
-        $this->drawText($image, $fontRegular, 26, 0, 74, 64, $labelColor, $label);
-        $this->drawText($image, $fontBold, 76, 0, 74, 154, $amountColor, $this->formatAmount($amount, $currency));
-        $this->drawText($image, $fontRegular, 24, 0, 74, 590, $hintColor, 'Freya');
-        $this->drawText($image, $fontRegular, 28, 0, 74, 636, $hintColor, $hint);
-        $this->drawText($image, $fontRegular, 22, 0, 74, 694, $hintColor, $code);
+        $this->drawText($image, $fontRegular, 25, 0, 70, 64, $labelColor, $label);
+        $this->drawText($image, $fontBold, 62, 0, 70, 148, $amountColor, $this->formatAmount($amount, $currency));
+        $this->drawText($image, $fontRegular, 22, 0, 72, 598, $hintColor, 'FREYA');
+        $this->drawText($image, $fontRegular, 30, 0, 72, 648, $hintColor, $hint);
+        $this->drawText($image, $fontRegular, 24, 0, 72, 706, $hintColor, $code);
 
-        $this->drawBadge($image, 980, 58, 136, 136);
-        $this->drawLogo($image, 1018, 96, 60, 60);
+        $this->drawBadge($image, 950, 52, 122, 122);
+        $this->drawLogo($image, 964, 66, 94, 94);
 
-        $this->drawBadge($image, 934, 470, 184, 184);
-        $this->drawQr($image, $token, 956, 492, 140, 140);
+        $this->drawBadge($image, 932, 494, 148, 148);
+        $this->drawQr($image, $token, 952, 514, 108, 108);
 
         ob_start();
         imagepng($image);
@@ -94,25 +96,33 @@ class GiftCardImageRenderer
 
     private function drawGlow($image, int $cx, int $cy, int $radius, array $rgb, int $alpha): void
     {
-        for ($i = $radius; $i > 0; $i -= 6) {
+        for ($i = $radius; $i > 0; $i -= 8) {
             $fade = 1 - ($i / $radius);
             $color = imagecolorallocatealpha(
                 $image,
                 $rgb[0],
                 $rgb[1],
                 $rgb[2],
-                min(127, (int) round($alpha + ($fade * 36)))
+                min(127, (int) round($alpha + ($fade * 18)))
             );
             imagefilledellipse($image, $cx, $cy, $i * 2, $i * 2, $color);
         }
     }
 
-    private function drawDiagonalSheen($image, int $width, int $height): void
+    private function drawSheen($image, int $width, int $height): void
     {
-        for ($i = -240; $i < $width + 240; $i += 2) {
-            $alpha = abs(($i % 220) - 110) < 24 ? 104 : 124;
+        for ($offset = -90; $offset <= 90; $offset++) {
+            $distance = abs($offset) / 90;
+            $alpha = min(127, (int) round(112 + ($distance * 10)));
             $color = imagecolorallocatealpha($image, 255, 255, 255, $alpha);
-            imageline($image, $i, 0, $i - 240, $height, $color);
+            imageline(
+                $image,
+                430 + $offset,
+                0,
+                250 + $offset,
+                $height,
+                $color
+            );
         }
     }
 
@@ -128,11 +138,15 @@ class GiftCardImageRenderer
     {
         $logoPath = public_path('logo.png');
         if (! is_file($logoPath)) {
+            $fallbackColor = imagecolorallocate($image, 35, 26, 18);
+            $this->drawText($image, $this->resolveFontPath(true), 16, 0, $x + 8, $y + 42, $fallbackColor, 'FREYA');
             return;
         }
 
         $logo = @imagecreatefrompng($logoPath);
         if ($logo === false) {
+            $fallbackColor = imagecolorallocate($image, 35, 26, 18);
+            $this->drawText($image, $this->resolveFontPath(true), 16, 0, $x + 8, $y + 42, $fallbackColor, 'FREYA');
             return;
         }
 
@@ -200,10 +214,14 @@ class GiftCardImageRenderer
     {
         $candidates = $bold
             ? [
+                '/usr/share/fonts/truetype/noto/NotoSansDisplay-Bold.ttf',
+                '/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf',
                 '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
                 '/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf',
             ]
             : [
+                '/usr/share/fonts/truetype/noto/NotoSansDisplay-Regular.ttf',
+                '/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf',
                 '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
                 '/usr/share/fonts/dejavu/DejaVuSans.ttf',
             ];
@@ -228,6 +246,6 @@ class GiftCardImageRenderer
 
     private function formatAmount(float $amount, string $currency): string
     {
-        return number_format($amount, 2, '.', ',').' '.$currency;
+        return number_format($amount, 2, ',', ' ').' '.$currency;
     }
 }
