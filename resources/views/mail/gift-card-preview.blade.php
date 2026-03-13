@@ -14,7 +14,7 @@
                     <td style="padding:24px;">
                         <h1 style="margin:0 0 10px 0;font-size:24px;line-height:1.3;">{{ $copy['title'] }}</h1>
                         <p style="margin:0 0 6px 0;font-size:14px;color:#5b5149;">{{ str_replace(':name', $recipientName, $copy['intro']) }}</p>
-                        <p style="margin:0 0 6px 0;font-size:14px;color:#5b5149;"><strong>{{ $copy['amount'] }}:</strong> {{ number_format((float) $amount, 0, '.', ' ') }} {{ $currency }}</p>
+                        <p style="margin:0 0 6px 0;font-size:14px;color:#5b5149;"><strong>{{ $copy['amount'] }}:</strong> {{ $formattedAmount }}</p>
                         <p style="margin:0 0 6px 0;font-size:14px;color:#5b5149;"><strong>{{ $copy['code'] }}:</strong> {{ $code }}</p>
                         <p style="margin:12px 0 0 0;font-size:14px;line-height:1.6;color:#7a6f64;">{{ $copy['attachment_notice'] }}</p>
                     </td>

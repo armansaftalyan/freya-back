@@ -54,13 +54,13 @@ class GiftCardImageRenderer
             $fontBold,
             50,
             0,
-            46,
-            154,
+            64,
+            172,
             $amountColor,
             $this->formatAmount($amount, $currency)
         );
 
-        $this->drawQrBadge($image, $token, 876, 404, 154, 154);
+        $this->drawQrBadge($image, $token, 862, 386, 154, 154);
 
         ob_start();
         imagepng($image);
@@ -175,6 +175,10 @@ class GiftCardImageRenderer
 
     private function formatAmount(float $amount, string $currency): string
     {
+        if (strtoupper($currency) === 'AMD') {
+            return number_format($amount, 2, ',', ' ').' ֏';
+        }
+
         return number_format($amount, 2, ',', ' ').' '.$currency;
     }
 }

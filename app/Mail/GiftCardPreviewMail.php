@@ -43,6 +43,7 @@ class GiftCardPreviewMail extends Mailable
                 'recipientName' => $this->recipientName,
                 'amount' => $this->amount,
                 'currency' => $this->currency,
+                'formattedAmount' => $this->formattedAmount(),
                 'code' => $this->code,
                 'token' => $this->token,
             ]);
@@ -67,6 +68,15 @@ class GiftCardPreviewMail extends Mailable
     {
         $safeCode = preg_replace('/[^A-Za-z0-9_-]+/', '-', $this->code) ?: 'gift-card';
         return $safeCode.'.png';
+    }
+
+    private function formattedAmount(): string
+    {
+        if (strtoupper($this->currency) === 'AMD') {
+            return number_format($this->amount, 0, '.', ' ').' ֏';
+        }
+
+        return number_format($this->amount, 0, '.', ' ').' '.$this->currency;
     }
 
     private function normalizeLocale(string $locale): string
